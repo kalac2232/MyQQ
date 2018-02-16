@@ -1,13 +1,14 @@
 package com.example.myqq.View;
 
+
 import android.content.Context;
-import android.content.res.ColorStateList;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Scroller;
+import android.widget.FrameLayout;
 
 import static android.content.ContentValues.TAG;
 
@@ -16,21 +17,17 @@ import static android.content.ContentValues.TAG;
  * Created by 97210 on 2/14/2018.
  */
 
-public class SlideMenuView extends ViewGroup {
+public class SlideMenuView extends FrameLayout {
 
-    private static final int MAIN_STATE = 0;
-    private static final int MENU_STATE = 1;
     private View leftMenu;
     private View content;
-    private float downX;
-    private float startX;
-    private int currentState = MAIN_STATE; // 当前模式
-    private Scroller scroller;
+    ViewDragHelper viewDragHelper;
+    private int leftMenuX;
+
     public SlideMenuView(Context context) {
         super(context);
         init();
     }
-
 
 
     public SlideMenuView(Context context, AttributeSet attrs) {
@@ -43,147 +40,108 @@ public class SlideMenuView extends ViewGroup {
         init();
 
     }
-    private void init() {
-        // 初始化滚动器, 数值模拟器
-        scroller = new Scroller(getContext());
-    }
     /**
-     * @param widthMeasureSpec 当前控件的宽度测量规则
-     * @param heightMeasureSpec 高度
+     * 当DragLayout的xml布局的结束标签被读取完成会执行该方法，此时会知道自己有几个子View了 一般用来初始化子View的引用
      */
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        //找到左面的菜单栏
+    protected void onFinishInflate() {
+        super.onFinishInflate();
         leftMenu = getChildAt(0);
-        //指定菜单栏的宽高
-        leftMenu.measure(leftMenu.getLayoutParams().width,heightMeasureSpec);
-        //找到主界面
         content = getChildAt(1);
-        content.measure(widthMeasureSpec,heightMeasureSpec);
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+    }
+    private void init() {
+        viewDragHelper = ViewDragHelper.create(this,callback);
+
     }
 
     @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        leftMenu.layout(-leftMenu.getMeasuredWidth(),0,0,b);
-        content.layout(l,t,r,b);
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        leftMenuX = leftMenu.getMeasuredWidth()-getMeasuredWidth()/10;
+        leftMenu.layout(-leftMenu.getMeasuredWidth() + getMeasuredWidth()/10,0,getMeasuredWidth()/10,bottom);
+        content.layout(left,top,right,bottom);
+    }
+
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        // 让ViewDragHelper帮我们判断是否应该拦截
+        boolean result = viewDragHelper.shouldInterceptTouchEvent(ev);
+        return result;
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-
-                downX = event.getX();
-                startX = downX;
-                Log.i(TAG, "onTouchEvent: downX"+ downX);
-                break;
-            case MotionEvent.ACTION_MOVE:
-                float moveX = event.getX();
-                Log.i(TAG, "onTouchEvent: moveX"+ moveX);
-                //变化量
-                int scrollX = (int)(downX - moveX);
-                //计算将要滚动的位置,判断是否会超出去
-                int newScrollPosition = getScrollX() + scrollX;
-                //限定左边界
-                //如果超出去了，直接到末尾不动
-                if (newScrollPosition < -leftMenu.getMeasuredWidth()) {
-                    scrollTo(-leftMenu.getMeasuredWidth(),0);
-                } else if (newScrollPosition > 0){ //限定右边界
-                    scrollBy(0,0);
-                }  else {
-
-                    scrollBy(scrollX,0);
-                }
-                downX = moveX;
-                break;
-            case MotionEvent.ACTION_UP:
-                float endX = event.getX();
-                Log.i(TAG, "onTouchEvent: upX:"+endX);
-                int menuCenter = (int) (-leftMenu.getMeasuredWidth() / 2.0f);
-                if (getScrollX() < menuCenter) {
-                    //打开
-                    currentState = MENU_STATE;
-                    updateCurrentContent();
-                } else {
-                    currentState = MAIN_STATE;
-                    updateCurrentContent();
-
-                }
-                //如果已经打开了菜单页，则点击右侧关闭
-                if (currentState == MENU_STATE && startX == endX && endX > leftMenu.getMeasuredWidth()) {
-                    currentState = MAIN_STATE;
-                    updateCurrentContent();
-
-                }
-
-                break;
-        }
-
+        // 将触摸事件交给ViewDragHelper来解析处理
+        viewDragHelper.processTouchEvent(event);
         return true;
-
     }
-
-    /**
-     * 根据当前的状态, 执行 关闭/开启 的动画
-     */
-    private void updateCurrentContent() {
-        int startX = getScrollX();
-        int dx = 0;
-        // 平滑滚动
-        if(currentState == MENU_STATE){
-            // 打开菜单
-            dx = -getChildAt(0).getMeasuredWidth() - startX;
-
-        } else {
-
-            dx = 0 - startX;
+    ViewDragHelper.Callback callback = new ViewDragHelper.Callback() {
+        /**
+         * 用于判断是否捕获当前child的触摸事件 child: 当前触摸的子View return: true:就捕获并解析 false：不处理
+         */
+        @Override
+        public boolean tryCaptureView(View child, int pointerId) {
+            return child == content;
         }
 
-        // startX: 开始的x值
-        // startY: 开始的y值
-        // dx: 将要发生的水平变化量. 移动的x距离
-        // dy: 将要发生的竖直变化量. 移动的y距离
-        // duration : 数据模拟持续的时长
+        @Override
+        public int clampViewPositionHorizontal(View child, int left, int dx) {
+            if (left>leftMenu.getMeasuredWidth()) {
+                return  left-dx;
+            }
+            if (left<0) {
+                return  left-dx;
+            }
+            return left;
+        }
+        /**
+         * 当child的位置改变的时候执行,一般用来做其他子View的伴随移动 changedView：位置改变的child
+         * left：child当前最新的left top: child当前最新的top dx: 本次水平移动的距离 dy: 本次垂直移动的距离
+         */
+        @Override
+        public void onViewPositionChanged(View changedView, int left, int top,
+                                          int dx, int dy) {
+            super.onViewPositionChanged(changedView, left, top, dx, dy);
+//
+            Log.i(TAG, "onViewPositionChanged: leftMenuX_now:" + leftMenu.getLeft());
+            Log.i(TAG, "onViewPositionChanged: leftMenu.getMeasuredWidth:" + leftMenu.getMeasuredWidth());
+            Log.i(TAG, "onViewPositionChanged: left:" + left);
+//            //计算view移动的百分比
+            float fraction  = left *1f/ leftMenu.getMeasuredWidth();
+            Log.i(TAG, "onViewPositionChanged: fraction:" + fraction);
 
-        // 1. 开始平滑的数据模拟
-        int duration = Math.abs(dx * 2); // 0 -> 1200
-        scroller.startScroll(startX, 0, dx, 0, duration);
+            float v = leftMenuX * fraction;
+            Log.i(TAG, "onViewPositionChanged: leftMenuX:" + leftMenuX);
+            Log.i(TAG, "onViewPositionChanged: v:" + v);
 
-        invalidate();// 重绘界面 -> drawChild() -> computeScroll();
-    }
+            leftMenu.layout(-leftMenuX + (int)v, leftMenu.getTop(),
+                    -leftMenuX + leftMenu.getMeasuredWidth() + (int)v, leftMenu.getBottom());
 
-    //2. 维持动画的继续
-    @Override
+        }
+        /**
+         * 手指抬起的执行该方法， releasedChild：当前抬起的view xvel: x方向的移动的速度 正：向右移动， 负：向左移动
+         * yvel: y方向移动的速度
+         */
+        @Override
+        public void onViewReleased(View releasedChild, float xvel, float yvel) {
+            super.onViewReleased(releasedChild, xvel, yvel);
+            int centerLeft = leftMenu.getLeft() + leftMenu.getMeasuredWidth()/2;
+            if ( centerLeft < 0) {
+                // 在左半边，应该向左缓慢移动
+                viewDragHelper.smoothSlideViewTo(content, 0, 0);
+                ViewCompat.postInvalidateOnAnimation(SlideMenuView.this);
+            } else {
+                // 在右半边，应该向右缓慢移动
+                viewDragHelper.smoothSlideViewTo(content,
+                        leftMenu.getMeasuredWidth(), 0);
+                ViewCompat.postInvalidateOnAnimation(SlideMenuView.this);
+            }
+        }
+
+    };
     public void computeScroll() {
-        super.computeScroll();
-        if(scroller.computeScrollOffset()){ // 直到duration事件以后, 结束
-            // true, 动画还没有结束
-            // 获取当前模拟的数据, 也就是要滚动到的位置
-            int currX = scroller.getCurrX();
-            scrollTo(currX, 0); // 滚过去
-            invalidate(); // 重绘界面-> drawChild() -> computeScroll();循环
+        if (viewDragHelper.continueSettling(true)) {
+            ViewCompat.postInvalidateOnAnimation(SlideMenuView.this);
         }
-    }
-
-    public void open(){
-        currentState = MENU_STATE;
-        updateCurrentContent();
-    }
-    public void close(){
-        currentState = MAIN_STATE;
-        updateCurrentContent();
-    }
-    //调用可进行弹出和缩入的操作
-    public void switchState(){
-        if(currentState == MAIN_STATE){
-            open();
-        }else {
-            close();
-        }
-    }
-
-    public int getCurrentState(){
-        return currentState;
     }
 }
