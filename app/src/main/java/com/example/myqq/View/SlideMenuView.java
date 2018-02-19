@@ -2,6 +2,7 @@ package com.example.myqq.View;
 
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import static android.content.ContentValues.TAG;
 
@@ -23,6 +25,8 @@ public class SlideMenuView extends FrameLayout {
     private View content;
     ViewDragHelper viewDragHelper;
     private int leftMenuX;
+    private FrameLayout frameLayout;
+    private ImageView shadowImage;
 
     public SlideMenuView(Context context) {
         super(context);
@@ -48,7 +52,22 @@ public class SlideMenuView extends FrameLayout {
         super.onFinishInflate();
         leftMenu = getChildAt(0);
         content = getChildAt(1);
+        //先将内容控件从原来的根布局中移除
+        removeView(content);
+        //创建新的容器
+        frameLayout = new FrameLayout(getContext());
+        //添加到容器中
+        frameLayout.addView(content);
+        //新建阴影ImageView
+        shadowImage = new ImageView(getContext());
 
+        //设置阴影的颜色
+        shadowImage.setBackgroundColor(Color.parseColor("#99000000"));
+        shadowImage.setAlpha(0f);
+        //也添加到容器中
+        frameLayout.addView(shadowImage);
+        //把新的容器放到旧的容器中相同的位置
+        addView(frameLayout,1);
     }
     private void init() {
         viewDragHelper = ViewDragHelper.create(this,callback);
@@ -81,7 +100,7 @@ public class SlideMenuView extends FrameLayout {
          */
         @Override
         public boolean tryCaptureView(View child, int pointerId) {
-            return child == content;
+            return child == frameLayout;
         }
 
         @Override
@@ -116,6 +135,8 @@ public class SlideMenuView extends FrameLayout {
 
             leftMenu.layout(-leftMenuX + (int)v, leftMenu.getTop(),
                     -leftMenuX + leftMenu.getMeasuredWidth() + (int)v, leftMenu.getBottom());
+            //2.执行一系列的伴随动画
+            executeAnim(fraction);
 
         }
         /**
@@ -128,11 +149,11 @@ public class SlideMenuView extends FrameLayout {
             int centerLeft = leftMenu.getLeft() + leftMenu.getMeasuredWidth()/2;
             if ( centerLeft < 0) {
                 // 在左半边，应该向左缓慢移动
-                viewDragHelper.smoothSlideViewTo(content, 0, 0);
+                viewDragHelper.smoothSlideViewTo(frameLayout, 0, 0);
                 ViewCompat.postInvalidateOnAnimation(SlideMenuView.this);
             } else {
                 // 在右半边，应该向右缓慢移动
-                viewDragHelper.smoothSlideViewTo(content,
+                viewDragHelper.smoothSlideViewTo(frameLayout,
                         leftMenu.getMeasuredWidth(), 0);
                 ViewCompat.postInvalidateOnAnimation(SlideMenuView.this);
             }
@@ -143,5 +164,10 @@ public class SlideMenuView extends FrameLayout {
         if (viewDragHelper.continueSettling(true)) {
             ViewCompat.postInvalidateOnAnimation(SlideMenuView.this);
         }
+    }
+    private void executeAnim(float fraction){
+
+        shadowImage.setAlpha(fraction);
+
     }
 }

@@ -73,36 +73,96 @@
         android:orientation="vertical"
         android:visibility="gone"
         >
-        <com.example.myqq.View.LoginEditText
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:id="@+id/let_loginname"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="QQ号/手机号/邮箱"
-            android:textColorHint="#dfff"
-            android:backgroundTint="#0000"
-            android:maxLines="1"
-            android:maxLength="20"
-            android:textColor="#dfff"
-            android:textSize="18sp"
-            />
-        <com.example.myqq.View.LoginEditText
-            android:id="@+id/let_pw"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="5dp"
+            android:id="@+id/rl_loginnanme">
+            <com.example.myqq.View.LoginEditText
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:id="@+id/let_loginname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="QQ号/手机号/邮箱"
+                android:textColorHint="#dfff"
+                android:backgroundTint="#0000"
+                android:maxLines="1"
+                android:maxLength="20"
+                android:textColor="#dfff"
+                android:textSize="18sp"
+                />
+            <ImageView
+                android:id="@+id/iv_name_arrows"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/arrows"
+                android:tint="#fbf9f9"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp"/>
+            <ImageView
+                android:id="@+id/iv_name_clean"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:tint="#fbf9f9"
+                android:src="@drawable/clean"
+                android:layout_toLeftOf="@id/iv_name_arrows"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="5dp"
+                android:visibility="gone"/>
+            <ImageView
+                android:id="@+id/iv_headicon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/headimage"
+                android:layout_toLeftOf="@id/iv_name_clean"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="5dp"
+                android:visibility="gone"/>
+        </RelativeLayout>
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="密码"
-            android:textColorHint="#dfff"
-            android:inputType="textPassword"
-            android:backgroundTint="#0000"
-            android:maxLines="1"
-            android:maxLength="20"
-            android:textColor="#dfff"
-            android:textSize="18sp"
-            />
+            android:id="@+id/rl_pw">
+            <com.example.myqq.View.LoginEditText
+                android:id="@+id/let_pw"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="密码"
+                android:textColorHint="#dfff"
+                android:inputType="textPassword"
+                android:backgroundTint="#0000"
+                android:maxLines="1"
+                android:maxLength="20"
+                android:textColor="#dfff"
+                android:textSize="18sp"
+                />
+
+            <ImageView
+                android:id="@+id/iv_pw_hide"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:tint="#fbf9f9"
+                android:src="@drawable/hide_pw"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp"
+                android:visibility="gone"/>
+            <ImageView
+                android:id="@+id/iv_pw_clean"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:tint="#fbf9f9"
+                android:src="@drawable/clean"
+                android:layout_toLeftOf="@id/iv_pw_hide"
+                android:layout_centerVertical="true"
+                android:visibility="gone"
+                android:layout_marginRight="5dp"/>
+        </RelativeLayout>
+
         <Button
             android:id="@+id/bt_login_in"
             android:layout_margin="15dp"
