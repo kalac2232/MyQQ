@@ -6,13 +6,10 @@ import android.graphics.Color;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-
-import static android.content.ContentValues.TAG;
 
 /**
  *
@@ -27,6 +24,7 @@ public class SlideMenuView extends FrameLayout {
     private int leftMenuX;
     private FrameLayout frameLayout;
     private ImageView shadowImage;
+    private float clickDownX;
 
     public SlideMenuView(Context context) {
         super(context);
@@ -67,7 +65,8 @@ public class SlideMenuView extends FrameLayout {
         //也添加到容器中
         frameLayout.addView(shadowImage);
         //把新的容器放到旧的容器中相同的位置
-        addView(frameLayout,1);
+        addView(frameLayout, 1);
+
     }
     private void init() {
         viewDragHelper = ViewDragHelper.create(this,callback);
@@ -91,6 +90,19 @@ public class SlideMenuView extends FrameLayout {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         // 将触摸事件交给ViewDragHelper来解析处理
+        switch (event.getAction()) {
+
+            case MotionEvent.ACTION_DOWN:
+                clickDownX = event.getX();
+                break;
+            case MotionEvent.ACTION_UP:
+                float upX = event.getX();
+
+                if (clickDownX == upX && leftMenu.getLeft() == 0 && clickDownX > leftMenu.getRight()) {
+                    close();
+                }
+                break;
+        }
         viewDragHelper.processTouchEvent(event);
         return true;
     }
@@ -121,17 +133,14 @@ public class SlideMenuView extends FrameLayout {
         public void onViewPositionChanged(View changedView, int left, int top,
                                           int dx, int dy) {
             super.onViewPositionChanged(changedView, left, top, dx, dy);
-//
-            Log.i(TAG, "onViewPositionChanged: leftMenuX_now:" + leftMenu.getLeft());
-            Log.i(TAG, "onViewPositionChanged: leftMenu.getMeasuredWidth:" + leftMenu.getMeasuredWidth());
-            Log.i(TAG, "onViewPositionChanged: left:" + left);
-//            //计算view移动的百分比
+
+
+            //计算view移动的百分比
             float fraction  = left *1f/ leftMenu.getMeasuredWidth();
-            Log.i(TAG, "onViewPositionChanged: fraction:" + fraction);
+
 
             float v = leftMenuX * fraction;
-            Log.i(TAG, "onViewPositionChanged: leftMenuX:" + leftMenuX);
-            Log.i(TAG, "onViewPositionChanged: v:" + v);
+
 
             leftMenu.layout(-leftMenuX + (int)v, leftMenu.getTop(),
                     -leftMenuX + leftMenu.getMeasuredWidth() + (int)v, leftMenu.getBottom());
@@ -148,14 +157,9 @@ public class SlideMenuView extends FrameLayout {
             super.onViewReleased(releasedChild, xvel, yvel);
             int centerLeft = leftMenu.getLeft() + leftMenu.getMeasuredWidth()/2;
             if ( centerLeft < 0) {
-                // 在左半边，应该向左缓慢移动
-                viewDragHelper.smoothSlideViewTo(frameLayout, 0, 0);
-                ViewCompat.postInvalidateOnAnimation(SlideMenuView.this);
+                close();
             } else {
-                // 在右半边，应该向右缓慢移动
-                viewDragHelper.smoothSlideViewTo(frameLayout,
-                        leftMenu.getMeasuredWidth(), 0);
-                ViewCompat.postInvalidateOnAnimation(SlideMenuView.this);
+                open();
             }
         }
 
@@ -169,5 +173,16 @@ public class SlideMenuView extends FrameLayout {
 
         shadowImage.setAlpha(fraction);
 
+    }
+    //关闭侧边栏
+    public void close () {
+        //向左缓慢移动
+        viewDragHelper.smoothSlideViewTo(frameLayout, 0, 0);
+        ViewCompat.postInvalidateOnAnimation(SlideMenuView.this);
+    }
+    //开启侧边栏
+    public void open () {
+        viewDragHelper.smoothSlideViewTo(frameLayout, leftMenu.getMeasuredWidth(), 0);
+        ViewCompat.postInvalidateOnAnimation(SlideMenuView.this);
     }
 }

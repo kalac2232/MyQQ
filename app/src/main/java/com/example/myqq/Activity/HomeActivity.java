@@ -4,16 +4,17 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 
 import com.example.myqq.Fragment.AppFragment;
 import com.example.myqq.Fragment.ContactsFragment;
-import com.example.myqq.Fragment.NewsFragment;
+import com.example.myqq.Fragment.ConversationFragment;
 import com.example.myqq.R;
+import com.example.myqq.View.NaviBarRadioButton;
 
 /**
  *
@@ -23,16 +24,15 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 
     private ContactsFragment contactsFragment;
     private AppFragment appFragment;
-    private NewsFragment newsFragment;
-    private Button bt_contacts;
-    private Button bt_app;
-    private Button bt_news;
+    private ConversationFragment conversationFragment;
     private Fragment currentFragment = null;
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        mContext = this;
         //实现状态栏透明
         if (Build.VERSION.SDK_INT >= 21) {
             View decorView = getWindow().getDecorView();
@@ -45,38 +45,24 @@ public class HomeActivity extends Activity implements View.OnClickListener {
     }
 
     private void init() {
-        bt_contacts = (Button) findViewById(R.id.bt_contacts);
-        bt_app = (Button) findViewById(R.id.bt_app);
-        bt_news = (Button) findViewById(R.id.bt_news);
 
-        newsFragment = new NewsFragment();
+
+        conversationFragment = new ConversationFragment();
         contactsFragment = new ContactsFragment();
         appFragment = new AppFragment();
 
-        showFragment(newsFragment);
+        showFragment(conversationFragment);
+        NaviBarRadioButton rb_conversation =  (NaviBarRadioButton) findViewById(R.id.rb_conversation);
+        NaviBarRadioButton rb_contact = (NaviBarRadioButton) findViewById(R.id.rb_contact);
+        NaviBarRadioButton rb_apps = (NaviBarRadioButton) findViewById(R.id.rb_apps);
 
-        bt_news.setOnClickListener(this);
-        bt_contacts.setOnClickListener(this);
-        bt_app.setOnClickListener(this);
-
-    }
-
-    @Override
-    public void onClick(View v) {
-
-        switch (v.getId()) {
-            case R.id.bt_news:
-                showFragment(newsFragment);
-                break;
-            case R.id.bt_contacts:
-                showFragment(contactsFragment);
-                break;
-            case R.id.bt_app:
-                showFragment(appFragment);
-                break;
-        }
+        rb_conversation.setOnClickListener(this);
+        rb_contact.setOnClickListener(this);
+        rb_apps.setOnClickListener(this);
 
     }
+
+
 
     /**
      * 显示相应的fragment
@@ -105,4 +91,18 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         fragmentTransaction.commit();
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.rb_conversation:
+                showFragment(conversationFragment);
+                break;
+            case R.id.rb_contact:
+                showFragment(contactsFragment);
+                break;
+            case R.id.rb_apps:
+                showFragment(appFragment);
+                break;
+        }
+    }
 }

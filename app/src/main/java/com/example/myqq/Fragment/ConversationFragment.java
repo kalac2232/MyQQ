@@ -13,7 +13,7 @@ import com.example.myqq.R;
  * Created by 97210 on 2/17/2018.
  */
 
-public class NewsFragment extends Fragment {
+public class ConversationFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
