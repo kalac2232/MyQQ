@@ -90,6 +90,8 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         currentFragment = fragment;
         fragmentTransaction.commit();
     }
+    private float startY;
+    private float startX;
 
     @Override
     public void onClick(View v) {

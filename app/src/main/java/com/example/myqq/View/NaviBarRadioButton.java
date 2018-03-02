@@ -130,7 +130,6 @@ public class NaviBarRadioButton extends RadioButton  {
 
                 int y1 = (int) (iconOffset*y2/l);
                 int x1 = (int) (iconOffset*x2/l);
-                Log.i(TAG, "onTouchEvent: x1 "+x1+"y1 "+y1);
                 if (!type.equals("动态")) {
                     normal_layerDrawable.setLayerInset(1,x1,y1,-x1,-y1);
                     selected_layerDrawable.setLayerInset(1,x1,y1,-x1,-y1);

@@ -6,10 +6,13 @@ import android.graphics.Color;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+
+import com.example.myqq.R;
 
 /**
  *
@@ -25,6 +28,8 @@ public class SlideMenuView extends FrameLayout {
     private FrameLayout frameLayout;
     private ImageView shadowImage;
     private float clickDownX;
+    private float startY;
+    private float startX;
 
     public SlideMenuView(Context context) {
         super(context);
@@ -68,9 +73,10 @@ public class SlideMenuView extends FrameLayout {
         addView(frameLayout, 1);
 
     }
+
+    private static final String TAG = "SlideMenuView";
     private void init() {
         viewDragHelper = ViewDragHelper.create(this,callback);
-
     }
 
     @Override
@@ -82,14 +88,18 @@ public class SlideMenuView extends FrameLayout {
     }
 
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        // 让ViewDragHelper帮我们判断是否应该拦截
+
+         //让ViewDragHelper帮我们判断是否应该拦截
         boolean result = viewDragHelper.shouldInterceptTouchEvent(ev);
+
         return result;
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+
         // 将触摸事件交给ViewDragHelper来解析处理
+        viewDragHelper.processTouchEvent(event);
         switch (event.getAction()) {
 
             case MotionEvent.ACTION_DOWN:
@@ -103,7 +113,7 @@ public class SlideMenuView extends FrameLayout {
                 }
                 break;
         }
-        viewDragHelper.processTouchEvent(event);
+        Log.i(TAG, "onTouchEvent: 1111111111111");
         return true;
     }
     ViewDragHelper.Callback callback = new ViewDragHelper.Callback() {
@@ -117,7 +127,9 @@ public class SlideMenuView extends FrameLayout {
 
         @Override
         public int clampViewPositionHorizontal(View child, int left, int dx) {
+            //如果滑动后的超过了所限定的位置
             if (left>leftMenu.getMeasuredWidth()) {
+                //恢复到未发生变化前的数值
                 return  left-dx;
             }
             if (left<0) {
@@ -138,7 +150,7 @@ public class SlideMenuView extends FrameLayout {
             //计算view移动的百分比
             float fraction  = left *1f/ leftMenu.getMeasuredWidth();
 
-
+            //计算view当前应该移动到什么位置
             float v = leftMenuX * fraction;
 
 
@@ -178,11 +190,13 @@ public class SlideMenuView extends FrameLayout {
     public void close () {
         //向左缓慢移动
         viewDragHelper.smoothSlideViewTo(frameLayout, 0, 0);
-        ViewCompat.postInvalidateOnAnimation(SlideMenuView.this);
+        invalidate();
     }
     //开启侧边栏
-    public void open () {
+    public void open() {
         viewDragHelper.smoothSlideViewTo(frameLayout, leftMenu.getMeasuredWidth(), 0);
-        ViewCompat.postInvalidateOnAnimation(SlideMenuView.this);
+        content.setFocusable(false);
+        invalidate();
     }
+
 }
