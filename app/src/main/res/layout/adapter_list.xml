@@ -7,9 +7,9 @@
     <com.example.myqq.View.ConversationListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
-        <!-- item内容的布局 -->
+        <!-- 主内容的布局 -->
         <include layout="@layout/list_content" />
-        <!-- delete区域的布局 -->
+        <!-- 删除区域的布局 -->
         <include layout="@layout/list_delete" />
     </com.example.myqq.View.ConversationListView>
 

@@ -173,7 +173,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Tex
             case R.id.iv_name_clean:
 
                 let_loginname.setText("");
-
+                iv_headicon.setVisibility(View.GONE);
                 break;
             case R.id.iv_pw_clean:
                 let_pw.setText("");

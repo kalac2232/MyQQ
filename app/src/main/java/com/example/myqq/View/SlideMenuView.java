@@ -195,7 +195,6 @@ public class SlideMenuView extends FrameLayout {
     //开启侧边栏
     public void open() {
         viewDragHelper.smoothSlideViewTo(frameLayout, leftMenu.getMeasuredWidth(), 0);
-        content.setFocusable(false);
         invalidate();
     }
 

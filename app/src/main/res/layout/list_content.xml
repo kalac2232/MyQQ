@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
-    android:orientation="horizontal">
+    android:layout_height="70dp"
+    android:orientation="horizontal"
+              >
     <ImageView
         android:layout_margin="15dp"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:background="@drawable/headimage"/>
     <LinearLayout
         android:layout_marginRight="15dp"
@@ -14,6 +16,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         <RelativeLayout
+            android:layout_marginTop="10dp"
             android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -21,20 +24,36 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_alignParentLeft="true"
+                android:textStyle= "bold"
                 android:text="此处显示联系人名称"
+                android:textColor="#000"
                 android:gravity="center"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_marginRight="5dp"
                 android:text="17:50"
                 android:layout_alignParentRight="true"
                 android:gravity="center"/>
         </RelativeLayout>
-        <TextView
+        <RelativeLayout
+            android:layout_marginBottom="10dp"
             android:layout_weight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="此处显示消息"
-            android:gravity="center"/>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="true"
+                android:text="此处显示消息"
+                android:gravity="center"/>
+            <TextView
+                android:id="@+id/tv_newsnumber"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:text="1"
+                android:layout_alignParentRight="true"
+                android:gravity="center"/>
+        </RelativeLayout>
     </LinearLayout>
 </LinearLayout>

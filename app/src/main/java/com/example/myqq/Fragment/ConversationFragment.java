@@ -5,18 +5,23 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
 import com.example.myqq.Adapter.ConversationAdapter;
 import com.example.myqq.R;
+import com.example.myqq.Utilts.ConversationListViewManager;
 
 /**
  * Created by 97210 on 2/17/2018.
@@ -49,7 +54,27 @@ public class ConversationFragment extends Fragment implements View.OnClickListen
         ListView lv_conversation = (ListView) view.findViewById(R.id.lv_conversation);
         //给listView设置数据适配器
         lv_conversation.setAdapter(new ConversationAdapter(context));
+        lv_conversation.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(context,"点击了" + position,Toast.LENGTH_SHORT).show();
+            }
+        });
+        lv_conversation.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                //如果发生了上下滑动
+                if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                    //则关闭打开的滑块
+                    ConversationListViewManager.getInstance().closeCurrentLayout();
+                }
+            }
 
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+            }
+        });
         //设置监听
         head_btn_add.setOnClickListener(this);
         iv_headicon.setOnClickListener(this);
@@ -62,13 +87,7 @@ public class ConversationFragment extends Fragment implements View.OnClickListen
                 showpopupwindow(v);
                 break;
             case R.id.iv_headicon:
-                //因为SlideMenuView类中的open方法暂时不会静态处理 则先用模拟手指滑动打开侧栏
-                getActivity().dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(),
-                        MotionEvent.ACTION_DOWN, 400, 500, 0));
-                getActivity().dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(),
-                        MotionEvent.ACTION_MOVE, 400+500, 500, 0));
-                getActivity().dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(),
-                        MotionEvent.ACTION_UP, 400+500, 500, 0));
+;
                 break;
         }
 
