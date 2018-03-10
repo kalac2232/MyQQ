@@ -6,14 +6,11 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
-import android.widget.Toast;
 
 import com.example.myqq.R;
 
@@ -104,7 +101,7 @@ public class NaviBarRadioButton extends RadioButton  {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     setTextColor(Color.parseColor("#ef1ea3d8"));
-                    Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.rb_scale);
+                    Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.rb_scale_anim);
                     startAnimation(animation);
                 } else {
                     setTextColor(Color.parseColor("#7f8393"));

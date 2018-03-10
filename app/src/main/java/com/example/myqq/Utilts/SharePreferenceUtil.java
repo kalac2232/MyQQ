@@ -43,6 +43,21 @@ public class SharePreferenceUtil {
         return sharedPreferences.getBoolean(key,defaultValue);
     }
     /**
+     * 向sp中存入Int类型的值
+     * @param context 上下文
+     * @param key 关键字
+     * @param value 存储的值
+     */
+    public static void putInt(Context context, String key, int value) {
+        if (sharedPreferences == null) {
+
+            sharedPreferences = context.getSharedPreferences("config", Context.MODE_PRIVATE);
+        }
+        SharedPreferences.Editor edit = sharedPreferences.edit();
+        edit.putInt(key,value);
+        edit.commit();//提交
+    }
+    /**
      * 向sp中存入String类型的值
      * @param context 上下文
      * @param key 关键字
@@ -71,6 +86,20 @@ public class SharePreferenceUtil {
             sharedPreferences = context.getSharedPreferences("config", Context.MODE_PRIVATE);
         }
         return sharedPreferences.getString(key,defaultValue);
+    }
+    /**
+     * 从sp中取Int类型的值
+     * @param context 上下文
+     * @param key 关键字
+     * @param defaultValue 没有取得值返回的默认值
+     * @return 返回取得的值
+     */
+    public static int getInt(Context context, String key, int defaultValue) {
+        if (sharedPreferences == null) {
+
+            sharedPreferences = context.getSharedPreferences("config", Context.MODE_PRIVATE);
+        }
+        return sharedPreferences.getInt(key,defaultValue);
     }
 
     /**
