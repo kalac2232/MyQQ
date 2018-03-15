@@ -1,6 +1,6 @@
 package com.example.myqq.Utilts;
 
-import com.example.myqq.View.ConversationListView;
+import com.example.myqq.View.ConversationFrameLayout;
 
 /**
  * 单例模式，用于管理ConversationListView
@@ -15,7 +15,7 @@ public class ConversationListViewManager {
     /**
      * 用来记录当前打开的滑块，为空为无记录，不为空则当前的滑块为打开状态
      */
-    private ConversationListView currentLayout;
+    private ConversationFrameLayout currentLayout;
     public static ConversationListViewManager getInstance() {
         return mInstance;
     }
@@ -24,7 +24,7 @@ public class ConversationListViewManager {
      * 记录当前打开的滑块
      * @param currentLayout
      */
-    public void setCurrentLayout(ConversationListView currentLayout){
+    public void setCurrentLayout(ConversationFrameLayout currentLayout){
         this.currentLayout = currentLayout;
     }
 
@@ -46,7 +46,7 @@ public class ConversationListViewManager {
      * 判断当前是否可以进行滑动
      * @return true 可以
      */
-    public boolean isCanSwipe(ConversationListView Layout){
+    public boolean isCanSwipe(ConversationFrameLayout Layout){
         //如果无记录，
         if (currentLayout == null) {
             return true;

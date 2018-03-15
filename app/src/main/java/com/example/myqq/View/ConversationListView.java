@@ -1,28 +1,43 @@
 package com.example.myqq.View;
 
 import android.content.Context;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.ViewDragHelper;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.AnimationDrawable;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 
-import com.example.myqq.Utilts.ConversationListViewManager;
+import com.example.myqq.R;
+import com.example.myqq.Utilts.ConstantValue;
+import com.example.myqq.Utilts.SharePreferenceUtil;
 
 /**
- * Created by 97210 on 2/24/2018.
+ *
+ * Created by 97210 on 3/11/2018.
  */
 
-public class ConversationListView extends FrameLayout {
-    private View listContent;
-    private View listDelete;
-    ViewDragHelper viewDragHelper;
-    private float startY;
-    private float startX;
-    private float start1X;
-    private float start1Y;
+public class ConversationListView extends ListView {
+
+    private float mStartY;
+    private float mStartX;
+    private View mHeaderView;
+    private int goo_MeasuredHeight;
+    private int mScreenWidth;
+    private View listviewSecondItem;
+    private RelativeLayout rl_listview_head;
+    private LinearLayout ll_refreshing;
+    private GooView mGooView;
+    private float mPaddingOffset;
+    private int statusBarHeight;
 
     public ConversationListView(Context context) {
         super(context);
@@ -40,184 +55,135 @@ public class ConversationListView extends FrameLayout {
     }
 
     private static final String TAG = "ConversationListView";
-
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-        listContent = getChildAt(0);
-        listDelete = getChildAt(1);
-
-    }
-
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
-        listContent.layout(left,top,right,bottom);
-        listDelete.layout(right,top,right+listDelete.getMeasuredWidth(),bottom);
-    }
-    enum SwipeState{
-        Open,Close;
-    }
     private void init() {
-        viewDragHelper = ViewDragHelper.create(this,callback);
+        mHeaderView = View.inflate(getContext(), R.layout.layout_listview_head,null);
+        mGooView = (GooView) mHeaderView.findViewById(R.id.goo_list_head);
+        rl_listview_head = (RelativeLayout) mHeaderView.findViewById(R.id.rl_listview_head);
+        ll_refreshing = (LinearLayout) mHeaderView.findViewById(R.id.ll_refreshing);
+        //手动测量width 和 height
+        mHeaderView.measure(0,0);
+        goo_MeasuredHeight = mGooView.getMeasuredHeight();
+        //获取屏幕的宽度
+        mScreenWidth = getResources().getDisplayMetrics().widthPixels;
+        //设置俩点的初始值
+        mGooView.initPointsCenter(mScreenWidth /2,goo_MeasuredHeight/2);
+        mHeaderView.setPadding(0, -goo_MeasuredHeight, 0, 0);
+        addHeaderView(mHeaderView);
+        statusBarHeight = SharePreferenceUtil.getInt(getContext(), ConstantValue.STATUSBARHEIGHT,-1);
+        mGooView.setOnAnimStateChangeListener(new GooView.OnAnimStateChangeListener() {
+            @Override
+            public void onAnimUnFinish() {
+
+            }
+
+            @Override
+            public void onAnimFinish() {
+                ll_refreshing.setVisibility(View.VISIBLE);
+            }
+        });
     }
-    private SwipeState currentState = SwipeState.Close;//记录当前状态，默认为关闭
+
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        boolean result = viewDragHelper.shouldInterceptTouchEvent(event);
-        //判断当前是否可以进行滑动,如果可以滑动，直接交给ontouch处理
-        if (!ConversationListViewManager.getInstance().isCanSwipe(this) ) {
-            //如果不可以滑动先关闭已经打开的滑块
-            ConversationListViewManager.getInstance().closeCurrentLayout();
-            result = true;
-        }
-        return result;
-    }
 
-//    @Override
-//    public boolean dispatchTouchEvent(MotionEvent event) {
-//        switch (event.getAction()) {
-//            case MotionEvent.ACTION_DOWN:
-//                start1X = event.getX();
-//                start1Y = event.getY();
-//                Log.i(TAG, "dispatchTouchEvent: ACTION_DOWN");
-//                break;
-//            case MotionEvent.ACTION_UP:
-//                Log.i(TAG, "dispatchTouchEvent: ACTION_UP");
-//                float end1X = event.getX();
-//                float end1Y = event.getY();
-//                if (start1X == end1X && start1Y == end1Y) {
-//                    return false;
-//                }
-//                break;
-//        }
-//        return super.dispatchTouchEvent(event);
-//    }
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                //onTouchEvent中的mStartY时从这里获取的 因为onTouchEvent不执行ACTION_DOWN事件，佷无奈
+                Log.i(TAG, "onInterceptTouchEvent: ACTION_DOWN");
+                mStartY = event.getY();
+                mStartX = event.getX();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                Log.i(TAG, "onInterceptTouchEvent: ACTION_MOVE");
+                float moveY = event.getY();
+                float moveX = event.getX();
+                //如果不拦截 则会将事件传入下一个控件导致卡顿
+                if (Math.abs(moveX - mStartX) < Math.abs(moveY - mStartY) && (moveY - mStartY)>0) {
+                    return true;
+                }
+
+                break;
+
+        }
+        return super.onInterceptTouchEvent(event);
+    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        //判断当前是否可以进行滑动
-        if ( !ConversationListViewManager.getInstance().isCanSwipe(this) ) {
-            return true;
-        }
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                startX = event.getX();
-                startY = event.getY();
-                Log.i(TAG, "onTouchEvent: ACTION_DOWN");
+                //这里的语句不执行 为什么？母鸡呀！
+                mStartY = event.getY();
+                Log.i(TAG, "onTouchEvent: 0");
                 break;
             case MotionEvent.ACTION_MOVE:
-                Log.i(TAG, "onTouchEvent: ACTION_MOVE");
-                float endX = event.getX();
-                float endY = event.getY();
-                float xOffset = endX - startX;
-                float yOffset = endY - startY;
-
-                if (Math.abs(xOffset) > Math.abs(yOffset)) {
-                    //请求父控件不要拦截事件
-                    requestDisallowInterceptTouchEvent(true);
+                float moveY = event.getY();
+                float yOffset = moveY - mStartY;
+                listviewSecondItem = getChildAt(1);
+                // 当前第一个可见条目的索引值为0,并且第二个条目（就是第一个聊天框）距上端的距离正好为headerview的宽度
+                if(getFirstVisiblePosition()==0 && listviewSecondItem.getTop() == mHeaderView.getMeasuredHeight()){
+                    if ((-goo_MeasuredHeight + yOffset) >= 0) {
+                        Log.i(TAG, "onTouchEvent: 1");
+                        //更改gooview的高度为Y的偏移量
+                        ViewGroup.LayoutParams params;
+                        params = mGooView.getLayoutParams();
+                        params.height = (int) yOffset;
+                        mGooView.setLayoutParams(params);
+                        //更新Sticky圆的中心点
+                        mGooView.updataStickyCenter(mScreenWidth /2, (mGooView.getStickyCenter().y + event.getY() - mPaddingOffset));
+                        mPaddingOffset = event.getY();
+                    } else {
+                        Log.i(TAG, "onTouchEvent: 2");
+                        mPaddingOffset = event.getY();
+                        if (yOffset >= 0) {
+                            mHeaderView.setPadding(0, (int) (-goo_MeasuredHeight + yOffset), 0, 0);
+                        } else {
+                            //初始化俩点的初始值
+                            mGooView.initPointsCenter(mScreenWidth /2,goo_MeasuredHeight/2);
+                            //恢复状态
+                            mGooView.clearStatus();
+                            return super.onTouchEvent(event);
+                        }
+                    }
+                } else {
+                    //当未将刷新栏拉出并向下滑时调用
+                    Log.i(TAG, "onTouchEvent: 3");
+                    //startY = moveY;
+                    return super.onTouchEvent(event);
+                    //headerView.setPadding(0, (int) ((offset + yOffset)/1.5), 0, 0);
                 }
-                startX = endX;
-                startY = endY;
-
-                break;
+                
+                return  true;
+                //break;
             case MotionEvent.ACTION_UP:
-                Log.i(TAG, "onTouchEvent: ACTION_UP");
-//                float end1X = event.getX();
-//                float end1Y = event.getY();
-//                if (start1X == end1X && start1Y == end1Y) {
-//                    return false;
-//                }
+                //将高度恢复
+                ViewGroup.LayoutParams params;
+                params = mGooView.getLayoutParams();
+                params.height = goo_MeasuredHeight;
+                mGooView.setLayoutParams(params);
+                if (ll_refreshing.getVisibility() == View.VISIBLE) {
+                    mHeaderView.setPadding(0, 0, 0, 0);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            ll_refreshing.setVisibility(View.GONE);
+                            mGooView.initPointsCenter(mScreenWidth /2,goo_MeasuredHeight/2);
+                            //恢复状态
+                            mGooView.clearStatus();
+                            mHeaderView.setPadding(0, -goo_MeasuredHeight, 0, 0);
+                        }
+                    }, 1001);
+                } else {
+                    mGooView.initPointsCenter(mScreenWidth /2,goo_MeasuredHeight/2);
+                    //恢复状态
+                    mGooView.clearStatus();
+                    mHeaderView.setPadding(0, -goo_MeasuredHeight, 0, 0);
+                }
                 break;
-        }
-        // 将触摸事件交给ViewDragHelper来解析处理
-        viewDragHelper.processTouchEvent(event);
-        return true;
-    }
 
-    ViewDragHelper.Callback callback = new ViewDragHelper.Callback() {
 
-        @Override
-        public boolean tryCaptureView(View child, int pointerId) {
-            return child == listContent || child == listDelete;
         }
-
-        @Override
-        public int getViewHorizontalDragRange(View child) {
-            return listDelete.getMeasuredWidth();
-        }
-
-        @Override
-        public int clampViewPositionHorizontal(View child, int left, int dx) {
-            if (child == listContent) {
-                if (left > 0) {
-                    left = 0;
-                }
-                if (left < -listDelete.getMeasuredWidth()) {
-                    left = -listDelete.getMeasuredWidth();
-                }
-            } else if (child == listDelete) {
-                if (left > listContent.getMeasuredWidth()) {
-                    left = listContent.getMeasuredWidth();
-                }
-                if (left < listContent.getMeasuredWidth()-listDelete.getMeasuredWidth()) {
-                    left = listContent.getMeasuredWidth()-listDelete.getMeasuredWidth();
-                }
-            }
-            return left;
-        }
-
-        @Override
-        /**
-         * 当child的位置改变的时候执行,一般用来做其他子View的伴随移动 changedView：位置改变的child
-         * left：child当前最新的left top: child当前最新的top dx: 本次水平移动的距离 dy: 本次垂直移动的距离
-         */
-        public void onViewPositionChanged(View changedView, int left, int top, int dx, int dy) {
-            super.onViewPositionChanged(changedView, left, top, dx, dy);
-            if (changedView == listContent) {
-                listDelete.layout(listDelete.getLeft()+dx,listDelete.getTop()+dy,listDelete.getRight()+dx,listDelete.getBottom()+dy);
-            } else if (changedView == listDelete) {
-                listContent.layout(listContent.getLeft()+dx,listContent.getTop()+dy,listContent.getRight()+dx,listContent.getBottom()+dy);
-            }
-            //判断当前的状态为开启还是为关闭
-            if (listContent.getLeft() == 0 && currentState != SwipeState.Close) {
-                currentState = SwipeState.Close;
-                //清空Manager中的记录值
-                ConversationListViewManager.getInstance().clearCurrentLayout();
-            }else if (listContent.getLeft() == -listDelete.getMeasuredWidth() && currentState != SwipeState.Open) {
-                currentState = SwipeState.Open;
-                //将当前滑块传给Manager管理起来
-                ConversationListViewManager.getInstance().setCurrentLayout(ConversationListView.this);
-            }
-        }
-        /**
-         * 手指抬起的执行该方法， releasedChild：当前抬起的view xvel: x方向的移动的速度 正：向右移动， 负：向左移动
-         * yvel: y方向移动的速度
-         */
-        @Override
-        public void onViewReleased(View releasedChild, float xvel, float yvel) {
-            super.onViewReleased(releasedChild, xvel, yvel);
-            int center = listContent.getMeasuredWidth() - listDelete.getMeasuredWidth()/2;
-            if ( listContent.getRight() < center ) {
-                Open();
-
-            } else {
-                Close();
-            }
-        }
-
-    };
-    public void computeScroll() {
-        if (viewDragHelper.continueSettling(true)) {
-            ViewCompat.postInvalidateOnAnimation(ConversationListView.this);
-        }
-    }
-    public void Open() {
-        viewDragHelper.smoothSlideViewTo(listDelete, listContent.getMeasuredWidth() - listDelete.getMeasuredWidth(), 0);
-        invalidate();
-    }
-    public void Close() {
-        viewDragHelper.smoothSlideViewTo(listDelete, listContent.getMeasuredWidth(), 0);
-        invalidate();
+        return super.onTouchEvent(event);
     }
 }

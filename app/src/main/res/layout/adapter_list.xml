@@ -2,15 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:background="#fff">
 
-    <com.example.myqq.View.ConversationListView
+    <com.example.myqq.View.ConversationFrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
         <!-- 主内容的布局 -->
         <include layout="@layout/list_content" />
         <!-- 删除区域的布局 -->
         <include layout="@layout/list_delete" />
-    </com.example.myqq.View.ConversationListView>
+    </com.example.myqq.View.ConversationFrameLayout>
 
 </LinearLayout>

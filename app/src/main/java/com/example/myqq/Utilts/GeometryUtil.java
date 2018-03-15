@@ -67,7 +67,7 @@ public class GeometryUtil {
 		PointF[] points = new PointF[2];
 		
 		float radian, xOffset = 0, yOffset = 0; 
-		if(lineK != null){
+		if(lineK != 0){
 			radian= (float) Math.atan(lineK);//得到该角的角度
 			xOffset = (float) (Math.sin(radian) * radius);//得到对边的长
 			yOffset = (float) (Math.cos(radian) * radius);//得到邻边的长

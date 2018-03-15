@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+>
+    <RelativeLayout
+        android:id="@+id/rl_listview_head"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.example.myqq.View.GooView
+            android:id="@+id/goo_list_head"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            />
+        <LinearLayout
+            android:id="@+id/ll_refreshing"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_centerHorizontal="true"
+            android:visibility="gone"
+>
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:src="@drawable/refresh_true"
+                android:layout_gravity="center"
+                android:layout_marginRight="4dp"/>
+            <TextView
+                android:layout_marginLeft="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="刷新成功"
+                android:layout_gravity="center"
+                android:textSize="15sp"/>
+        </LinearLayout>
+    </RelativeLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#fff">
+        <RelativeLayout
+
+            android:layout_margin="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:background="@drawable/selectbar_shape">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_centerInParent="true">
+                <ImageView
+                    android:layout_gravity="center"
+                    android:layout_marginRight="4dp"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:src="@drawable/select_icon"
+                    android:tint="#CCC"
+                    />
+                <TextView
+                    android:gravity="center"
+                    android:layout_marginLeft="4dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:text="搜索"
+                    android:textColor="#A6A6A6"/>
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </FrameLayout>
+
+</LinearLayout>

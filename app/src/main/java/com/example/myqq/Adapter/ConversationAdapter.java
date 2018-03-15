@@ -103,12 +103,15 @@ public class ConversationAdapter extends BaseAdapter implements View.OnTouchList
             //当动画结束后执行
             public void onAnimFinish() {
                 //当动画执行结束后，清除粘性控件和相应的状态
-                windowManager.removeView(gooView);
-                //判断textview是否可以显示出来
-                if (!gooView.getCanDestroy()) {
-                    recordView.setVisibility(View.VISIBLE);
+                if (gooView != null) {
+
+                    windowManager.removeView(gooView);
+                    //判断textview是否可以显示出来
+                    if (!gooView.getDestroy()) {
+                        recordView.setVisibility(View.VISIBLE);
+                    }
                 }
-                gooView.clearStatus();
+                gooView = null;
             }
         });
         v.getParent().requestDisallowInterceptTouchEvent(true);
@@ -119,12 +122,12 @@ public class ConversationAdapter extends BaseAdapter implements View.OnTouchList
                 int[] location = new  int[2] ;
                 v.getLocationInWindow(location);
                 //设置不动圆的圆心
-                gooView.initStickyCenter(location[0]+v.getMeasuredWidth()/2,location[1]+v.getMeasuredHeight()/2-statusBarHeight);
+                gooView.initPointsCenter(location[0]+v.getMeasuredWidth()/2,location[1]+v.getMeasuredHeight()/2-statusBarHeight);
                 gooView.setRadius(v.getMeasuredWidth()/2);
                 gooView.setNewNumber(number);
                 //设置规则
                 mParams.format = PixelFormat.TRANSLUCENT;
-                mParams.type = WindowManager.LayoutParams.TYPE_APPLICATION;
+                mParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG;
                 mParams.gravity = Gravity.TOP | Gravity.LEFT;
                 //在屏幕上添加粘性控件
                 windowManager.addView(gooView,mParams);

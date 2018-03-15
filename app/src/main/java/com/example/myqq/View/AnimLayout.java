@@ -9,9 +9,9 @@ import android.widget.FrameLayout;
  * To show the end animation(bubble burst)
  *
  */
-public class BubbleLayout extends FrameLayout {
+public class AnimLayout extends FrameLayout {
 
-	public BubbleLayout(Context context) {
+	public AnimLayout(Context context) {
 		super(context);
 	}
 	private int mCenterX, mCenterY;

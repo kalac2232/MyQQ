@@ -12,11 +12,13 @@
         android:background="@drawable/headimage"/>
 
     <LinearLayout
-        android:layout_marginRight="15dp"
+
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        >
         <RelativeLayout
+            android:layout_marginRight="15dp"
             android:layout_marginTop="10dp"
             android:layout_weight="1"
             android:layout_width="match_parent"
@@ -37,7 +39,9 @@
                 android:layout_alignParentRight="true"
                 android:gravity="center"/>
         </RelativeLayout>
+
         <RelativeLayout
+            android:layout_marginRight="15dp"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="10dp"
             android:layout_weight="1"
@@ -62,5 +66,10 @@
                 android:layout_alignParentRight="true"
                 android:gravity="center"/>
         </RelativeLayout>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="#555"/>
     </LinearLayout>
 </LinearLayout>

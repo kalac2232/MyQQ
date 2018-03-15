@@ -54,12 +54,7 @@ public class ConversationFragment extends Fragment implements View.OnClickListen
         ListView lv_conversation = (ListView) view.findViewById(R.id.lv_conversation);
         //给listView设置数据适配器
         lv_conversation.setAdapter(new ConversationAdapter(context));
-        lv_conversation.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(context,"点击了" + position,Toast.LENGTH_SHORT).show();
-            }
-        });
+
         lv_conversation.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
