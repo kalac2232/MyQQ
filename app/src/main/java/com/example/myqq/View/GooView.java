@@ -127,7 +127,7 @@ public class GooView extends View {
         }
         //如果是画listview中的才进行圆半径的改变
         if (roundPaint.getColor() == Color.GRAY) {
-
+            //获取应该缩小为的半径
             dragRadius = getDragRadius();
 
             //如果对于listview头中的gooview来说一旦断裂就不需要绘制了

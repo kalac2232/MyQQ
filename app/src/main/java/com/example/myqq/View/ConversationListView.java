@@ -1,16 +1,14 @@
 package com.example.myqq.View;
 
 import android.content.Context;
-import android.graphics.PixelFormat;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -36,8 +34,17 @@ public class ConversationListView extends ListView {
     private RelativeLayout rl_listview_head;
     private LinearLayout ll_refreshing;
     private GooView mGooView;
+    private Boolean isRefreshAnimFinish = false;
     private float mPaddingOffset;
+
     private int statusBarHeight;
+    Handler handler = new Handler() {
+
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            clearStatus();
+        }
+    };
 
     public ConversationListView(Context context) {
         super(context);
@@ -68,6 +75,7 @@ public class ConversationListView extends ListView {
         //设置俩点的初始值
         mGooView.initPointsCenter(mScreenWidth /2,goo_MeasuredHeight/2);
         mHeaderView.setPadding(0, -goo_MeasuredHeight, 0, 0);
+        //给listview添加头布局
         addHeaderView(mHeaderView);
         statusBarHeight = SharePreferenceUtil.getInt(getContext(), ConstantValue.STATUSBARHEIGHT,-1);
         mGooView.setOnAnimStateChangeListener(new GooView.OnAnimStateChangeListener() {
@@ -78,7 +86,30 @@ public class ConversationListView extends ListView {
 
             @Override
             public void onAnimFinish() {
-                ll_refreshing.setVisibility(View.VISIBLE);
+                final ImageView imageView = new ImageView(getContext());
+                imageView.setImageResource(R.drawable.progress_anim);
+                final AnimationDrawable animDrawable = (AnimationDrawable) imageView.getDrawable();
+                RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
+                param.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                param.topMargin = 15;
+                rl_listview_head.addView(imageView,param);
+                animDrawable.start();
+                //模拟获取消息的状态
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        rl_listview_head.removeView(imageView);
+                        ll_refreshing.setVisibility(View.VISIBLE);
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                ll_refreshing.setVisibility(View.GONE);
+                                isRefreshAnimFinish = true;
+                            }
+                        }, 1000);
+                    }
+                }, 1000);
+
             }
         });
     }
@@ -123,13 +154,17 @@ public class ConversationListView extends ListView {
                 listviewSecondItem = getChildAt(1);
                 // 当前第一个可见条目的索引值为0,并且第二个条目（就是第一个聊天框）距上端的距离正好为headerview的宽度
                 if(getFirstVisiblePosition()==0 && listviewSecondItem.getTop() == mHeaderView.getMeasuredHeight()){
-                    if ((-goo_MeasuredHeight + yOffset) >= 0) {
+                    if ((-goo_MeasuredHeight + yOffset) > 0) {
                         Log.i(TAG, "onTouchEvent: 1");
+                        mHeaderView.setPadding(0, 0, 0, 0);
                         //更改gooview的高度为Y的偏移量
                         ViewGroup.LayoutParams params;
                         params = mGooView.getLayoutParams();
                         params.height = (int) yOffset;
                         mGooView.setLayoutParams(params);
+
+                        //Log.i(TAG, "onTouchEvent: rl_listview_head.getY();" + rl_listview_head.getY());
+                        //Log.i(TAG, "onTouchEvent: ll_refreshing.getY();" + ll_refreshing.getY());
                         //更新Sticky圆的中心点
                         mGooView.updataStickyCenter(mScreenWidth /2, (mGooView.getStickyCenter().y + event.getY() - mPaddingOffset));
                         mPaddingOffset = event.getY();
@@ -137,7 +172,8 @@ public class ConversationListView extends ListView {
                         Log.i(TAG, "onTouchEvent: 2");
                         mPaddingOffset = event.getY();
                         if (yOffset >= 0) {
-                            mHeaderView.setPadding(0, (int) (-goo_MeasuredHeight + yOffset), 0, 0);
+                            Log.i(TAG, "onTouchEvent: rl_listview_head.getY();" + rl_listview_head.getY());
+                            mHeaderView.setPadding(0, (int) (-goo_MeasuredHeight + (int)yOffset), 0, 0);
                         } else {
                             //初始化俩点的初始值
                             mGooView.initPointsCenter(mScreenWidth /2,goo_MeasuredHeight/2);
@@ -162,28 +198,41 @@ public class ConversationListView extends ListView {
                 params = mGooView.getLayoutParams();
                 params.height = goo_MeasuredHeight;
                 mGooView.setLayoutParams(params);
-                if (ll_refreshing.getVisibility() == View.VISIBLE) {
+                //如果刷新成功页面还在显示
+                if (!isRefreshAnimFinish && mGooView.getDestroy()) {
+                    //先将刷新页面继续显示
                     mHeaderView.setPadding(0, 0, 0, 0);
-                    new Handler().postDelayed(new Runnable() {
+                    //创建一个线程来判断刷新页面的状态
+                    new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            ll_refreshing.setVisibility(View.GONE);
-                            mGooView.initPointsCenter(mScreenWidth /2,goo_MeasuredHeight/2);
-                            //恢复状态
-                            mGooView.clearStatus();
-                            mHeaderView.setPadding(0, -goo_MeasuredHeight, 0, 0);
+                            while (true) {
+                                //当刷新成功的页面消失
+                                if (isRefreshAnimFinish) {
+                                    //给handler发送一个空消息 告诉可以更新ui了（使界面恢复初始状态）
+                                    handler.sendEmptyMessage(0);
+                                    break;
+                                }
+                            }
                         }
-                    }, 1001);
+                    }).start();
+
                 } else {
-                    mGooView.initPointsCenter(mScreenWidth /2,goo_MeasuredHeight/2);
-                    //恢复状态
-                    mGooView.clearStatus();
-                    mHeaderView.setPadding(0, -goo_MeasuredHeight, 0, 0);
+                    //恢复默认状态
+                    clearStatus();
                 }
+
                 break;
 
 
         }
         return super.onTouchEvent(event);
+    }
+    public void clearStatus() {
+        mGooView.initPointsCenter(mScreenWidth /2,goo_MeasuredHeight/2);
+        //恢复状态
+        mGooView.clearStatus();
+        mHeaderView.setPadding(0, -goo_MeasuredHeight, 0, 0);
+        isRefreshAnimFinish = false;
     }
 }
