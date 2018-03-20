@@ -31,7 +31,7 @@ public class SplashActivity extends Activity {
          * 获取状态栏高度——方法
          * */
 
-        if (SharePreferenceUtil.getInt(mContext,ConstantValue.STATUSBARHEIGHT,-1) == -1) {
+        if (ConstantValue.statusBarHeight == -1) {
             int statusBarHeight = -1;
             //获取status_bar_height资源的ID
             int resourceId = mContext.getResources().getIdentifier("status_bar_height", "dimen", "android");
@@ -39,8 +39,7 @@ public class SplashActivity extends Activity {
                 //根据资源ID获取响应的尺寸值
                 statusBarHeight = mContext.getResources().getDimensionPixelSize(resourceId);
             }
-            //存入sp中
-            SharePreferenceUtil.putInt(mContext,ConstantValue.STATUSBARHEIGHT,statusBarHeight);
+            ConstantValue.statusBarHeight = statusBarHeight;
         }
 
         //1秒后启动登陆页或主页

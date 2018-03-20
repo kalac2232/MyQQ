@@ -93,7 +93,7 @@ public class GooView extends View {
         dragCenter = new PointF();
         stickyCenter = new PointF();
         setRadius(defaultRadius);
-        statusBarHeight = SharePreferenceUtil.getInt(getContext(), ConstantValue.STATUSBARHEIGHT,-1);
+        statusBarHeight = ConstantValue.statusBarHeight;
 
     }
 
@@ -106,7 +106,7 @@ public class GooView extends View {
         //textPaint.setTextSize(35);
         dragCenter = new PointF();
         stickyCenter = new PointF();
-        statusBarHeight = SharePreferenceUtil.getInt(getContext(), ConstantValue.STATUSBARHEIGHT,-1);
+        statusBarHeight = ConstantValue.statusBarHeight;
     }
 
     @Override

@@ -28,8 +28,9 @@ public class SlideMenuView extends FrameLayout {
     private FrameLayout frameLayout;
     private ImageView shadowImage;
     private float clickDownX;
-    private float startY;
     private float startX;
+    private float startY;
+
 
     public SlideMenuView(Context context) {
         super(context);
@@ -87,11 +88,25 @@ public class SlideMenuView extends FrameLayout {
         content.layout(left,top,right,bottom);
     }
 
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
+    public boolean onInterceptTouchEvent(MotionEvent event) {
 
          //让ViewDragHelper帮我们判断是否应该拦截
-        boolean result = viewDragHelper.shouldInterceptTouchEvent(ev);
+        boolean result = viewDragHelper.shouldInterceptTouchEvent(event);
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                startX = event.getX();
+                startY = event.getY();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                float endX = event.getX();
+                float endY = event.getY();
 
+                if (Math.abs(endX-startX) > Math.abs(endY-startY) && (endX - startX) > 0) {
+                    result = true;
+                    Log.i(TAG, "onInterceptTouchEvent: ACTION_MOVE执行");
+                }
+                break;
+        }
         return result;
     }
 
@@ -103,9 +118,15 @@ public class SlideMenuView extends FrameLayout {
         switch (event.getAction()) {
 
             case MotionEvent.ACTION_DOWN:
+                //应该是因为此处为被调用，所以导致viewDragHelper不能正常解析event事件
+                Log.i(TAG, "onTouchEvent: ACTION_DOWN");
                 clickDownX = event.getX();
                 break;
+            case MotionEvent.ACTION_MOVE:
+                Log.i(TAG, "onTouchEvent: ACTION_MOVE");
+                break;
             case MotionEvent.ACTION_UP:
+                Log.i(TAG, "onTouchEvent: ACTION_UP");
                 float upX = event.getX();
 
                 if (clickDownX == upX && leftMenu.getLeft() == 0 && clickDownX > leftMenu.getRight()) {
@@ -113,7 +134,7 @@ public class SlideMenuView extends FrameLayout {
                 }
                 break;
         }
-        Log.i(TAG, "onTouchEvent: 1111111111111");
+
         return true;
     }
     ViewDragHelper.Callback callback = new ViewDragHelper.Callback() {

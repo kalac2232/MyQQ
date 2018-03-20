@@ -114,7 +114,7 @@
                 android:id="@+id/iv_headicon"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:src="@drawable/headimage"
+                android:src="@drawable/qqicon"
                 android:layout_toLeftOf="@id/iv_name_clean"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="5dp"

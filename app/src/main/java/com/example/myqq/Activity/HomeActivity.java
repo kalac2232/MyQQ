@@ -50,9 +50,10 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         conversationFragment = new ConversationFragment();
         contactsFragment = new ContactsFragment();
         appFragment = new AppFragment();
-
+        //默认显示消息Fragment
         showFragment(conversationFragment);
-        NaviBarRadioButton rb_conversation =  (NaviBarRadioButton) findViewById(R.id.rb_conversation);
+        //找到按钮控件
+        NaviBarRadioButton rb_conversation = (NaviBarRadioButton) findViewById(R.id.rb_conversation);
         NaviBarRadioButton rb_contact = (NaviBarRadioButton) findViewById(R.id.rb_contact);
         NaviBarRadioButton rb_apps = (NaviBarRadioButton) findViewById(R.id.rb_apps);
 
@@ -90,8 +91,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         currentFragment = fragment;
         fragmentTransaction.commit();
     }
-    private float startY;
-    private float startX;
+
 
     @Override
     public void onClick(View v) {

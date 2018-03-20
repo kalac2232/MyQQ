@@ -8,5 +8,6 @@ package com.example.myqq.Utilts;
 public class ConstantValue {
 
     public static final String ISLOGININ = "is_login_in";
-    public static final String STATUSBARHEIGHT = "statusBarHeight";
+
+    public static int statusBarHeight = -1;
 }

@@ -7,13 +7,13 @@ import android.view.MotionEvent;
 import android.widget.FrameLayout;
 
 /**
- * 装不同fragment的frameLayout
+ * 装不同fragment的FrameLayout
  * Created by 97210 on 2/28/2018.
  */
 
 public class MainFrameLayout extends FrameLayout {
-    private float startY;
     private float startX;
+    private float startY;
     public MainFrameLayout(Context context) {
         super(context);
     }
@@ -29,7 +29,7 @@ public class MainFrameLayout extends FrameLayout {
     private static final String TAG = "MainFrameLayout";
 
 //    public boolean onInterceptTouchEvent(MotionEvent event) {
-//        boolean isIntercept = false;
+//
 //        switch (event.getAction()) {
 //            case MotionEvent.ACTION_DOWN:
 //                Log.i(TAG, "ACTION_DOWN: ACTION_DOWN");
@@ -44,14 +44,14 @@ public class MainFrameLayout extends FrameLayout {
 ////                Log.i(TAG, "yOffset: yOffset " + yOffset);
 //                if (Math.abs(xOffset) > Math.abs(yOffset) && xOffset > 0) {
 //                    Log.i(TAG, "onInterceptTouchEvent: true");
-//                    isIntercept = true;
+//                    return true;
 //                }
 //                break;
 //            case MotionEvent.ACTION_UP:
 //                Log.i(TAG, "ACTION_UP: ACTION_UP");
 //                break;
 //        }
-//        return isIntercept;
+//        return super.onInterceptTouchEvent(event);
 //    }
 
     @Override

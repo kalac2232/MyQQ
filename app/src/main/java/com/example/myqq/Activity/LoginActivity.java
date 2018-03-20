@@ -2,6 +2,7 @@ package com.example.myqq.Activity;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -21,22 +22,35 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.myqq.R;
 import com.example.myqq.Utilts.ConstantValue;
+import com.example.myqq.Utilts.ProperTies;
 import com.example.myqq.Utilts.SharePreferenceUtil;
 import com.example.myqq.View.LoginEditText;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 public class LoginActivity extends Activity implements View.OnClickListener, TextWatcher {
 
     private ImageView qq;
-    private Context mContext;
+    private static Context mContext;
     private LinearLayout ll_index;
     private LinearLayout ll_tip;
     private LinearLayout ll_login;
     private LoginEditText let_loginname;
     private LoginEditText let_pw;
-    private String user = "123456";
-    private String pw = "123456";
     private Button sign_up;
     private Button sign_in;
     private Button bt_login_in;
@@ -137,18 +151,15 @@ public class LoginActivity extends Activity implements View.OnClickListener, Tex
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bt_login_in:
+                //点击登陆操作
                 String QQnumber = let_loginname.getText().toString();
                 String Password = let_pw.getText().toString();
-                if (QQnumber.equals(user) && Password.equals(pw)) {
-                    //跳转到主页面
-                    startActivity(new Intent(mContext,HomeActivity.class));
-                    SharePreferenceUtil.putBoolean(mContext, ConstantValue.ISLOGININ,true);
-                    finish();
-                } else {
-                    Toast.makeText(mContext,"检查账号和密码",Toast.LENGTH_SHORT).show();
-                }
+                //登陆操作
+                LoginRequest(QQnumber,Password);
+
                 break;
             case R.id.sign_in:
+                //引导界面的登陆按钮  按下后会跳到真正登陆界面
                 //获取屏幕的宽高
                 WindowManager manager = this.getWindowManager();
                 DisplayMetrics outMetrics = new DisplayMetrics();
@@ -167,6 +178,10 @@ public class LoginActivity extends Activity implements View.OnClickListener, Tex
                         .ofFloat(ll_login, "translationY", 0.0F, -height/6)//
                         .setDuration(500)//
                         .start();
+                break;
+            case R.id.sign_up:
+                //注册操作
+                //TODO 点下注册按钮的跳转到注册界面
                 break;
             case R.id.iv_name_arrows:
                 break;
@@ -198,6 +213,82 @@ public class LoginActivity extends Activity implements View.OnClickListener, Tex
         }
     }
 
+    /**
+     * 登陆操作
+     * @param QQNumber 要验证的QQ号
+     * @param password 和密码
+     */
+    public static void LoginRequest(final String QQNumber, final String password) {
+        //请求地址
+        String Servlet = "LoginServlet";
+        //从配置文件中读取服务器地址
+        Properties proper = ProperTies.getProperties(mContext);
+        String url = proper.getProperty("serverUrl") + Servlet;
+        String tag = "Login";
+        Log.i(TAG, "LoginRequest: url:" + url);
+        //取得请求队列
+        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
+
+        //防止重复请求，所以先取消tag标识的请求队列
+        requestQueue.cancelAll(tag);
+        //创建响应监听对象
+        Response.Listener<String> responseListner = new Response.Listener<String>() {
+
+            public void onResponse(String response) {
+                Log.i(TAG, "onResponse: response" + response);
+                try {
+                    JSONObject jsonObject = (JSONObject) new JSONObject(response).get("params");
+                    String result = jsonObject.getString("Result");
+                    if (result.equals("success")) {
+                        //做自己的登录成功操作，如页面跳转
+                        //跳转到主页面
+                        //TODO 还需要一个将用户数据写入本地数据库的操作，否则第二次打开无法显示昵称头像等信息
+                        mContext.startActivity(new Intent(mContext,HomeActivity.class));
+                        SharePreferenceUtil.putBoolean(mContext, ConstantValue.ISLOGININ,true);
+                        //TODO 处理接收到的数据，并需要单例模式，将接收到的数据存放起来
+                        String nickname = jsonObject.getString("Nickname");
+                        String headImageNumber = jsonObject.getString("HeadImageNumber");
+                        //关闭当前activity
+                        Activity activity = (Activity) mContext;
+                        activity.finish();
+                    } else {
+                        //登录失败操作
+                        Toast.makeText(mContext,"检查账号和密码",Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    //做自己的请求异常操作，如Toast提示（“无网络连接”等）
+                    Log.e(TAG, e.getMessage(), e);
+                    Toast.makeText(mContext,"抛异常",Toast.LENGTH_SHORT).show();
+                    Log.i(TAG, "onResponse: 抛异常");
+                }
+            }
+
+        };
+        //错误监听对象
+        Response.ErrorListener errorListener = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //做自己的响应错误操作，如Toast提示（“请稍后重试”等）
+                Log.e(TAG, error.getMessage(), error);
+            }
+        };
+        //创建StringRequest，定义字符串请求的请求方式为POST(省略第一个参数会默认为GET方式)
+        final StringRequest request = new StringRequest(Request.Method.POST, url, responseListner, errorListener) {
+            @Override
+            //在这里设置POST参数
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("QQNumber", QQNumber);  //注⑥
+                params.put("Password", password);
+                return params;
+            }
+        };
+        //设置Tag标签
+        request.setTag(tag);
+
+        //将请求添加到队列中
+        requestQueue.add(request);
+    }
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -213,13 +304,13 @@ public class LoginActivity extends Activity implements View.OnClickListener, Tex
             //当不为空的时候显示清除图标
             if (s.length() > 0) {
                 iv_name_clean.setVisibility(View.VISIBLE);
+                //TODO 联网获取头像稍后再做
                 //判断用户名获取图标
-                if (scan_user.equals(user)) {
-
-                    iv_headicon.setVisibility(View.VISIBLE);
-                } else {
-                    iv_headicon.setVisibility(View.GONE);
-                }
+//                if (scan_user.equals(user)) {
+//                    iv_headicon.setVisibility(View.VISIBLE);
+//                } else {
+//                    iv_headicon.setVisibility(View.GONE);
+//                }
             } else {
                 iv_name_clean.setVisibility(View.GONE);
             }

@@ -33,7 +33,7 @@ public class ConversationAdapter extends BaseAdapter implements View.OnTouchList
 
     public ConversationAdapter(Context context) {
         this.mContext = context;
-        statusBarHeight = SharePreferenceUtil.getInt(mContext, ConstantValue.STATUSBARHEIGHT,-1);
+        statusBarHeight = ConstantValue.statusBarHeight;
     }
 
     @Override

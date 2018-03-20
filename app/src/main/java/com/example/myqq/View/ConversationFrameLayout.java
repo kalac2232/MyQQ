@@ -78,16 +78,18 @@ public class ConversationFrameLayout extends FrameLayout {
 //    @Override
 //    public boolean dispatchTouchEvent(MotionEvent event) {
 //        switch (event.getAction()) {
+//
 //            case MotionEvent.ACTION_DOWN:
-//                start1X = event.getX();
-//                start1Y = event.getY();
-//                Log.i(TAG, "dispatchTouchEvent: ACTION_DOWN");
+//                startX = event.getX();
+//                startY = event.getY();
+//
 //                break;
-//            case MotionEvent.ACTION_UP:
-//                Log.i(TAG, "dispatchTouchEvent: ACTION_UP");
-//                float end1X = event.getX();
-//                float end1Y = event.getY();
-//                if (start1X == end1X && start1Y == end1Y) {
+//            case MotionEvent.ACTION_MOVE:
+//                float endX = event.getX();
+//                float endY = event.getY();
+//
+//                if (Math.abs(endX-startX) > Math.abs(endY-startY) && (endX - startX) > 0) {
+//                    Log.i(TAG, "dispatchTouchEvent: ACTION_MOVE执行");
 //                    return false;
 //                }
 //                break;
@@ -103,7 +105,9 @@ public class ConversationFrameLayout extends FrameLayout {
             return true;
         }
         switch (event.getAction()) {
+
             case MotionEvent.ACTION_DOWN:
+
                 startX = event.getX();
                 startY = event.getY();
                 Log.i(TAG, "onTouchEvent: ACTION_DOWN");

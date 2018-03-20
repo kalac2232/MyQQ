@@ -77,7 +77,7 @@ public class ConversationListView extends ListView {
         mHeaderView.setPadding(0, -goo_MeasuredHeight, 0, 0);
         //给listview添加头布局
         addHeaderView(mHeaderView);
-        statusBarHeight = SharePreferenceUtil.getInt(getContext(), ConstantValue.STATUSBARHEIGHT,-1);
+        statusBarHeight = ConstantValue.statusBarHeight;
         mGooView.setOnAnimStateChangeListener(new GooView.OnAnimStateChangeListener() {
             @Override
             public void onAnimUnFinish() {

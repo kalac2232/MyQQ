@@ -9,7 +9,7 @@
         android:layout_gravity="center"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:background="@drawable/headimage"/>
+        android:background="@drawable/headimage_7"/>
 
     <LinearLayout
 

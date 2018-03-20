@@ -4,20 +4,10 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.icu.text.DisplayContext;
-import android.support.v4.content.ContextCompat;
-import android.text.Editable;
-import android.text.InputType;
-import android.text.Selection;
-import android.text.TextWatcher;
+
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
+
 import android.widget.EditText;
-import android.widget.ImageView;
 
 import com.example.myqq.R;
 

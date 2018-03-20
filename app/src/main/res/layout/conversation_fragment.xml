@@ -20,7 +20,7 @@
             android:layout_marginLeft="15dp"
             android:layout_height="30dp"
             android:layout_centerVertical="true"
-            android:background="@drawable/headimage"
+            android:background="@drawable/qqicon"
             />
         <TextView
             android:layout_centerVertical="true"
