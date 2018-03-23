@@ -3,23 +3,21 @@ package com.example.myqq.Fragment;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
-import android.widget.Toast;
 
 import com.example.myqq.Adapter.ConversationAdapter;
+import com.example.myqq.Bean.UserInfo;
+import com.example.myqq.DAO.UserDAO.UserDAOUtile;
 import com.example.myqq.R;
 import com.example.myqq.Utilts.ConversationListViewManager;
 
@@ -50,8 +48,13 @@ public class ConversationFragment extends Fragment implements View.OnClickListen
     private void init(View view) {
         //找到控件
         Button head_btn_add = (Button) view.findViewById(R.id.head_btn_add);
-        ImageView iv_headicon = (ImageView) view.findViewById(R.id.iv_headicon);
+        ImageView iv_main_headicon = (ImageView) view.findViewById(R.id.iv_main_headicon);
         ListView lv_conversation = (ListView) view.findViewById(R.id.lv_conversation);
+        //根据用户设置头像
+        //查询登陆的用户信息
+        UserDAOUtile userDAOUtile = new UserDAOUtile(context);
+        UserInfo userInfo = userDAOUtile.querytUser();
+        iv_main_headicon.setImageDrawable(userInfo.getHeadImage());
         //给listView设置数据适配器
         lv_conversation.setAdapter(new ConversationAdapter(context));
 
@@ -72,7 +75,7 @@ public class ConversationFragment extends Fragment implements View.OnClickListen
         });
         //设置监听
         head_btn_add.setOnClickListener(this);
-        iv_headicon.setOnClickListener(this);
+        iv_main_headicon.setOnClickListener(this);
     }
 
     @Override
@@ -81,7 +84,7 @@ public class ConversationFragment extends Fragment implements View.OnClickListen
             case R.id.head_btn_add:
                 showpopupwindow(v);
                 break;
-            case R.id.iv_headicon:
+            case R.id.iv_main_headicon:
 ;
                 break;
         }
@@ -92,7 +95,7 @@ public class ConversationFragment extends Fragment implements View.OnClickListen
         View view = LayoutInflater.from(context).inflate(R.layout.pop_window, null);
         //构造方法public PopupWindow(View contentView, int width, int height, boolean focusable)  focusable让PopupWindow获得焦点
         final PopupWindow popupWindow = new PopupWindow(view, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
-        //相对某个控件的位置（正左下方），无偏移
+        //相对某个控件的位置（正下方），无偏移
         popupWindow.showAsDropDown(v);
         //让点击后退键是关闭弹窗
         popupWindow.setOutsideTouchable(true);

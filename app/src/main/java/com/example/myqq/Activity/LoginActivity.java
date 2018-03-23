@@ -2,11 +2,8 @@ package com.example.myqq.Activity;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
-import android.app.DownloadManager;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -20,6 +17,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -29,6 +27,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.myqq.Bean.UserInfo;
+import com.example.myqq.DAO.UserDAO.UserDAOUtile;
 import com.example.myqq.R;
 import com.example.myqq.Utilts.ConstantValue;
 import com.example.myqq.Utilts.ProperTies;
@@ -52,6 +52,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Tex
     private LoginEditText let_loginname;
     private LoginEditText let_pw;
     private Button sign_up;
+    private TextView sign_up2;
     private Button sign_in;
     private Button bt_login_in;
     private ImageView iv_headicon;
@@ -62,6 +63,8 @@ public class LoginActivity extends Activity implements View.OnClickListener, Tex
     private boolean nameFocus = false;
     private boolean passwordFocus = false;
     private boolean passwordHide = false;
+    private int width;
+    private int height;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,18 +73,28 @@ public class LoginActivity extends Activity implements View.OnClickListener, Tex
         mContext = this;
         initUI();
         initListener();
+        Intent intent = getIntent();
+        if (intent != null) {
+            String className = intent.getStringExtra("ClassName");
+            if (className.equals("RegisterActivity")){
+                ll_index.setVisibility(View.GONE);
+                ll_login.setVisibility(View.VISIBLE);
+                ll_tip.setVisibility(View.VISIBLE);
 
+            }
+        }
     }
 
     private void initListener() {
 
         sign_in.setOnClickListener(this);
+        sign_up.setOnClickListener(this);
         bt_login_in.setOnClickListener(this);
         iv_name_arrows.setOnClickListener(this);
         iv_name_clean.setOnClickListener(this);
         iv_pw_clean.setOnClickListener(this);
         iv_pw_hide.setOnClickListener(this);
-
+        sign_up2.setOnClickListener(this);
         let_loginname.addTextChangedListener(this);
         let_loginname.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -118,6 +131,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Tex
         //sign_in 登陆
         sign_in = (Button) findViewById(R.id.sign_in);//初始页的登陆按钮
         sign_up = (Button) findViewById(R.id.sign_up);//初始页的注册按钮
+        sign_up2 = (TextView) findViewById(R.id.sign_up2);//登陆页的注册按钮
 
         qq = (ImageView) findViewById(R.id.qq); //上方的qq图标
 
@@ -135,7 +149,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Tex
         RelativeLayout rl_pw = (RelativeLayout) findViewById(R.id.rl_pw); //包裹密码输入框一整条的控件
 
         //头像预览图标
-        iv_headicon = (ImageView) findViewById(R.id.iv_headicon);
+        iv_headicon = (ImageView) findViewById(R.id.iv_main_headicon);
         //下拉图标
         iv_name_arrows = (ImageView) findViewById(R.id.iv_name_arrows);
         //清除输入文本图标
@@ -150,38 +164,47 @@ public class LoginActivity extends Activity implements View.OnClickListener, Tex
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.bt_login_in:
-                //点击登陆操作
-                String QQnumber = let_loginname.getText().toString();
-                String Password = let_pw.getText().toString();
-                //登陆操作
-                LoginRequest(QQnumber,Password);
-
-                break;
             case R.id.sign_in:
-                //引导界面的登陆按钮  按下后会跳到真正登陆界面
+                //引导界面的登陆按钮  按下后会显示真正登陆界面
                 //获取屏幕的宽高
                 WindowManager manager = this.getWindowManager();
                 DisplayMetrics outMetrics = new DisplayMetrics();
                 manager.getDefaultDisplay().getMetrics(outMetrics);
-                final int width = outMetrics.widthPixels;
-                final int height = outMetrics.heightPixels;
+                width = outMetrics.widthPixels;
+                height = outMetrics.heightPixels;
                 ll_index.setVisibility(View.GONE);
                 ll_login.setVisibility(View.VISIBLE);
                 ll_tip.setVisibility(View.VISIBLE);
                 //设置动画
                 ObjectAnimator//
-                        .ofFloat(qq, "translationX", 0.0F,-width/3.2f)//
+                        .ofFloat(qq, "translationX", 0.0F,-width /3.2f)//
                         .setDuration(500)//
                         .start();
                 ObjectAnimator//
-                        .ofFloat(ll_login, "translationY", 0.0F, -height/6)//
+                        .ofFloat(ll_login, "translationY", 0.0F, -height /6)//
                         .setDuration(500)//
                         .start();
                 break;
+            case R.id.bt_login_in:
+                //点击登陆操作
+                final String QQnumber = let_loginname.getText().toString();
+                final String Password = let_pw.getText().toString();
+                //登陆操作
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        LoginRequest(QQnumber,Password);
+                    }
+                }).start();
+                break;
+
             case R.id.sign_up:
                 //注册操作
-                //TODO 点下注册按钮的跳转到注册界面
+            case R.id.sign_up2:
+                //注册操作
+                //点下注册按钮的跳转到注册界面
+                mContext.startActivity(new Intent(this,RegisterActivity.class));
+
                 break;
             case R.id.iv_name_arrows:
                 break;
@@ -218,7 +241,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Tex
      * @param QQNumber 要验证的QQ号
      * @param password 和密码
      */
-    public static void LoginRequest(final String QQNumber, final String password) {
+    public void LoginRequest(final String QQNumber, final String password) {
         //请求地址
         String Servlet = "LoginServlet";
         //从配置文件中读取服务器地址
@@ -235,22 +258,32 @@ public class LoginActivity extends Activity implements View.OnClickListener, Tex
         Response.Listener<String> responseListner = new Response.Listener<String>() {
 
             public void onResponse(String response) {
-                Log.i(TAG, "onResponse: response" + response);
                 try {
                     JSONObject jsonObject = (JSONObject) new JSONObject(response).get("params");
                     String result = jsonObject.getString("Result");
                     if (result.equals("success")) {
                         //做自己的登录成功操作，如页面跳转
                         //跳转到主页面
-                        //TODO 还需要一个将用户数据写入本地数据库的操作，否则第二次打开无法显示昵称头像等信息
+
                         mContext.startActivity(new Intent(mContext,HomeActivity.class));
                         SharePreferenceUtil.putBoolean(mContext, ConstantValue.ISLOGININ,true);
-                        //TODO 处理接收到的数据，并需要单例模式，将接收到的数据存放起来
+                        //接受数据
                         String nickname = jsonObject.getString("Nickname");
                         String headImageNumber = jsonObject.getString("HeadImageNumber");
-                        //关闭当前activity
-                        Activity activity = (Activity) mContext;
-                        activity.finish();
+                        //将数据存储数据库中
+                        UserInfo userInfo = new UserInfo(mContext,Integer.parseInt(QQNumber), nickname, Integer.parseInt(headImageNumber));
+
+                        UserDAOUtile userDAOUtile = new UserDAOUtile(mContext);
+                        boolean insertResult = userDAOUtile.insertUser(userInfo);
+                        //如果成功插入了
+                        if (insertResult) {
+                            //关闭当前activity
+                            Activity activity = (Activity) mContext;
+                            activity.finish();
+                        } else {
+                            Log.e(TAG, "数据插入失败 ");
+                        }
+
                     } else {
                         //登录失败操作
                         Toast.makeText(mContext,"检查账号和密码",Toast.LENGTH_SHORT).show();
@@ -259,7 +292,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Tex
                     //做自己的请求异常操作，如Toast提示（“无网络连接”等）
                     Log.e(TAG, e.getMessage(), e);
                     Toast.makeText(mContext,"抛异常",Toast.LENGTH_SHORT).show();
-                    Log.i(TAG, "onResponse: 抛异常");
+                    Log.i(TAG, "onResponse: 无网络连接");
                 }
             }
 

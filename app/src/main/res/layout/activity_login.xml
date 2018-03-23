@@ -111,10 +111,10 @@
                 android:layout_marginRight="5dp"
                 android:visibility="gone"/>
             <ImageView
-                android:id="@+id/iv_headicon"
+                android:id="@+id/iv_main_headicon"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:src="@drawable/qqicon"
+                android:src="@drawable/headimage_0"
                 android:layout_toLeftOf="@id/iv_name_clean"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="5dp"
@@ -184,6 +184,7 @@
                 android:textSize="12sp"
                 android:layout_marginLeft="20dp"/>
             <TextView
+                android:id="@+id/sign_up2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="新用户注册"

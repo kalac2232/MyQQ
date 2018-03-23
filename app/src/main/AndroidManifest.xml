@@ -2,7 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.myqq">
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <application
+        android:name=".Application.QQApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -18,6 +20,10 @@
         </activity>
         <activity android:name=".Activity.LoginActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+
+        </activity>
+        <activity android:name=".Activity.RegisterActivity"
+                  android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
 
         </activity>
         <activity android:name=".Activity.HomeActivity" />

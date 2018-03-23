@@ -12,6 +12,8 @@ import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.Window;
 
+import com.example.myqq.Bean.UserInfo;
+import com.example.myqq.DAO.UserDAO.UserDAOUtile;
 import com.example.myqq.R;
 import com.example.myqq.Utilts.ConstantValue;
 import com.example.myqq.Utilts.SharePreferenceUtil;
@@ -45,14 +47,18 @@ public class SplashActivity extends Activity {
         //1秒后启动登陆页或主页
         new Handler().postDelayed(new Runnable(){
             public void run() {
-                //execute the task
-                //从xml中取出记录是否成功登陆的值
-                boolean isloginin = SharePreferenceUtil.getBoolean(mContext, ConstantValue.ISLOGININ, false);
-                if (isloginin) {
+
+                //从数据库中查询是否存在userinfo对象
+                UserDAOUtile userDAOUtile = new UserDAOUtile(mContext);
+                UserInfo userInfo = userDAOUtile.querytUser();
+                //boolean isloginin = SharePreferenceUtil.getBoolean(mContext, ConstantValue.ISLOGININ, false);
+                if (userInfo != null) {
                     startActivity(new Intent(mContext,HomeActivity.class));
                 } else {
-
-                    startActivity(new Intent(mContext, LoginActivity.class));
+                    //如果不存在则跳转到登陆界面
+                    Intent intent = new Intent(mContext, LoginActivity.class);
+                    intent.putExtra("ClassName","SplashActivity");
+                    startActivity(intent);
                 }
                 finish();
                 overridePendingTransition(R.anim.next_in_anim,R.anim.next_out_anim);

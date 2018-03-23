@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
+ * 读配置文件的
  * Created by 97210 on 2018/3/20.
  */
 

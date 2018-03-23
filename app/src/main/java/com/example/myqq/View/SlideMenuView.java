@@ -3,6 +3,7 @@ package com.example.myqq.View;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
@@ -11,7 +12,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.example.myqq.Bean.UserInfo;
+import com.example.myqq.DAO.UserDAO.UserDAOUtile;
 import com.example.myqq.R;
 
 /**
@@ -72,12 +76,21 @@ public class SlideMenuView extends FrameLayout {
         frameLayout.addView(shadowImage);
         //把新的容器放到旧的容器中相同的位置
         addView(frameLayout, 1);
-
+        TextView sliding_nickname = (TextView) findViewById(R.id.tv_sliding_nickname);
+        //查询登陆的用户信息
+        UserDAOUtile userDAOUtile = new UserDAOUtile(getContext());
+        UserInfo userInfo = userDAOUtile.querytUser();
+        //设置昵称
+        sliding_nickname.setText(userInfo.getNickname());
+        //设置头像
+        ImageView sliding_headIcon = (ImageView) findViewById(R.id.iv_sliding_headIcon);
+        sliding_headIcon.setImageDrawable(userInfo.getHeadImage());
     }
 
     private static final String TAG = "SlideMenuView";
     private void init() {
         viewDragHelper = ViewDragHelper.create(this,callback);
+
     }
 
     @Override
