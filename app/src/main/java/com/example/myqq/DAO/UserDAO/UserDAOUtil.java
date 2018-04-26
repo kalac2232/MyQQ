@@ -13,11 +13,11 @@ import com.example.myqq.DAO.MySQLiteOpenHelper;
  * Created by 97210 on 2018/3/22.
  */
 
-public class UserDAOUtile {
+public class UserDAOUtil {
 
     private MySQLiteOpenHelper mySQLiteOpenHelper = null;
     Context context;
-    public UserDAOUtile(Context context) {
+    public UserDAOUtil(Context context) {
         mySQLiteOpenHelper = new MySQLiteOpenHelper(context);
         this.context = context;
     }
@@ -33,6 +33,7 @@ public class UserDAOUtile {
         contentValues.put("QQNumber",user.getQQNumber());
         contentValues.put("Nickname",user.getNickname());
         contentValues.put("HeadImageNumber",user.getHeadImageNumber());
+        contentValues.put("Token",user.getToken());
         long result = database.insert("user", null, contentValues);
         database.close();
         if (result == -1) {
@@ -54,7 +55,8 @@ public class UserDAOUtile {
                 int QQNumber = cursor.getInt(0);
                 String Nickname = cursor.getString(1);
                 int headImageNumber = cursor.getInt(2);
-                user = new UserInfo(context,QQNumber,Nickname,headImageNumber);
+                String token = cursor.getString(3);
+                user = new UserInfo(context,QQNumber,Nickname,headImageNumber,token);
             }
         }
         database.close();

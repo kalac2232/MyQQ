@@ -1,7 +1,9 @@
 package com.example.myqq.Fragment;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -9,17 +11,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
+import com.example.myqq.Activity.ChatActivity;
 import com.example.myqq.Adapter.ConversationAdapter;
 import com.example.myqq.Bean.UserInfo;
-import com.example.myqq.DAO.UserDAO.UserDAOUtile;
+import com.example.myqq.DAO.UserDAO.UserDAOUtil;
 import com.example.myqq.R;
-import com.example.myqq.Utilts.ConversationListViewManager;
+
+import java.util.List;
+
+import io.rong.imlib.RongIMClient;
+import io.rong.imlib.model.Conversation;
 
 /**
  * Created by 97210 on 2/17/2018.
@@ -27,6 +35,7 @@ import com.example.myqq.Utilts.ConversationListViewManager;
 
 public class ConversationFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "ConversationFragment";
+
     Context context;
     @Override
     public void onAttach(Context context) {
@@ -39,7 +48,7 @@ public class ConversationFragment extends Fragment implements View.OnClickListen
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.conversation_fragment, null);
+        View view = inflater.inflate(R.layout.fragment_conversation, null);
         init(view);
 
         return view;
@@ -52,30 +61,51 @@ public class ConversationFragment extends Fragment implements View.OnClickListen
         ListView lv_conversation = (ListView) view.findViewById(R.id.lv_conversation);
         //根据用户设置头像
         //查询登陆的用户信息
-        UserDAOUtile userDAOUtile = new UserDAOUtile(context);
-        UserInfo userInfo = userDAOUtile.querytUser();
+        UserDAOUtil userDAOUtil = new UserDAOUtil(context);
+        UserInfo userInfo = userDAOUtil.querytUser();
         iv_main_headicon.setImageDrawable(userInfo.getHeadImage());
         //给listView设置数据适配器
-        lv_conversation.setAdapter(new ConversationAdapter(context));
-
-        lv_conversation.setOnScrollListener(new AbsListView.OnScrollListener() {
+        ConversationAdapter conversationAdapter = new ConversationAdapter(context);
+        lv_conversation.setAdapter(conversationAdapter);
+        lv_conversation.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-                //如果发生了上下滑动
-                if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
-                    //则关闭打开的滑块
-                    ConversationListViewManager.getInstance().closeCurrentLayout();
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(context,"i"+position,Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(context, ChatActivity.class);
+                context.startActivity(intent);
+                Activity activity = (Activity) ConversationFragment.this.context;
+                //开启动画
+                activity.overridePendingTransition(R.anim.next_in_anim,R.anim.next_out_anim);
+            }
+        });
+        //读取消息列表
+        requsetConversation();
+        //设置监听
+        head_btn_add.setOnClickListener(this);
+        iv_main_headicon.setOnClickListener(this);
+    }
+
+    /**
+     * 读取消息列表
+     */
+    private void  requsetConversation() {
+
+        RongIMClient.getInstance().getConversationList(new RongIMClient.ResultCallback<List<Conversation>>() {
+
+            @Override
+            public void onSuccess(List<Conversation> conversations) {
+                if (conversations == null) {
+                    Log.i(TAG, "onSuccess: 本地为空 应该向服务器请求数据");
+                } else {
+
                 }
             }
 
             @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+            public void onError(RongIMClient.ErrorCode errorCode) {
 
             }
         });
-        //设置监听
-        head_btn_add.setOnClickListener(this);
-        iv_main_headicon.setOnClickListener(this);
     }
 
     @Override

@@ -23,18 +23,24 @@ public class UserInfo {
     /**
      * 用户头像编码
      */
-    private int HeadImageNumber;
+    private int HeadImageIndex;
 
 
     /**
      * 用户的头像
      */
     private Drawable HeadImage;
-    public UserInfo(Context context,int QQNumber, String nickname, int headImageNumber) {
+
+    /**
+     * 登陆用户的Token值 用于融云服务
+     */
+    private String Token;
+    public UserInfo(Context context,int QQNumber, String nickname, int headImageIndex,String Token) {
         this.QQNumber = QQNumber;
         Nickname = nickname;
-        HeadImageNumber = headImageNumber;
-        HeadImage = findDrawableFromNumber(context, headImageNumber);
+        HeadImageIndex = headImageIndex;
+        HeadImage = findDrawableFromNumber(context, headImageIndex);
+        this.Token = Token;
     }
 
 
@@ -55,11 +61,11 @@ public class UserInfo {
     }
 
     public int getHeadImageNumber() {
-        return HeadImageNumber;
+        return HeadImageIndex;
     }
 
-    public void setHeadImageNumber(int headImageNumber) {
-        HeadImageNumber = headImageNumber;
+    public void setHeadImageIndex(int headImageIndex) {
+        HeadImageIndex = headImageIndex;
     }
     public Drawable getHeadImage() {
         return HeadImage;
@@ -68,17 +74,24 @@ public class UserInfo {
     public void setHeadImage(Drawable headImage) {
         HeadImage = headImage;
     }
+    public String getToken() {
+        return Token;
+    }
+
+    public void setToken(String token) {
+        Token = token;
+    }
     @Override
     public String toString() {
         return "UserInfo{" +
                 "QQNumber=" + QQNumber +
                 ", Nickname='" + Nickname + '\'' +
-                ", HeadImageNumber=" + HeadImageNumber +
+                ", HeadImageIndex=" + HeadImageIndex +
                 '}';
     }
-    public Drawable findDrawableFromNumber(Context context,int headImageNumber) {
+    public Drawable findDrawableFromNumber(Context context,int headImageIndex) {
         Drawable drawable = null;
-        switch (headImageNumber) {
+        switch (headImageIndex) {
             case 0:
                 drawable = context.getResources().getDrawable(R.drawable.headimage_0);
                 break;

@@ -5,10 +5,13 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.BaseAdapter;
+import android.widget.Toast;
 
 import com.example.myqq.Fragment.AppFragment;
 import com.example.myqq.Fragment.ContactsFragment;
@@ -16,11 +19,13 @@ import com.example.myqq.Fragment.ConversationFragment;
 import com.example.myqq.R;
 import com.example.myqq.View.NaviBarRadioButton;
 
+import io.rong.imlib.RongIMClient;
+
 /**
  *
  * Created by 97210 on 2/14/2018.
  */
-public class HomeActivity extends Activity implements View.OnClickListener {
+public class HomeActivity extends BaseActivity implements View.OnClickListener {
 
     private ContactsFragment contactsFragment;
     private AppFragment appFragment;
@@ -33,14 +38,6 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         mContext = this;
-        //实现状态栏透明
-        if (Build.VERSION.SDK_INT >= 21) {
-            View decorView = getWindow().getDecorView();
-            int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
-            decorView.setSystemUiVisibility(option);
-            getWindow().setStatusBarColor(Color.TRANSPARENT);
-        }
         init();
     }
 

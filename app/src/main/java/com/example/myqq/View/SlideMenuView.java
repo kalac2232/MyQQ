@@ -3,7 +3,6 @@ package com.example.myqq.View;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
@@ -15,7 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.myqq.Bean.UserInfo;
-import com.example.myqq.DAO.UserDAO.UserDAOUtile;
+import com.example.myqq.DAO.UserDAO.UserDAOUtil;
 import com.example.myqq.R;
 
 /**
@@ -78,8 +77,8 @@ public class SlideMenuView extends FrameLayout {
         addView(frameLayout, 1);
         TextView sliding_nickname = (TextView) findViewById(R.id.tv_sliding_nickname);
         //查询登陆的用户信息
-        UserDAOUtile userDAOUtile = new UserDAOUtile(getContext());
-        UserInfo userInfo = userDAOUtile.querytUser();
+        UserDAOUtil userDAOUtil = new UserDAOUtil(getContext());
+        UserInfo userInfo = userDAOUtil.querytUser();
         //设置昵称
         sliding_nickname.setText(userInfo.getNickname());
         //设置头像

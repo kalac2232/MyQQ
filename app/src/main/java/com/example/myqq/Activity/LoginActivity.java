@@ -28,7 +28,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.myqq.Bean.UserInfo;
-import com.example.myqq.DAO.UserDAO.UserDAOUtile;
+import com.example.myqq.DAO.UserDAO.UserDAOUtil;
 import com.example.myqq.R;
 import com.example.myqq.Utilts.ConstantValue;
 import com.example.myqq.Utilts.ProperTies;
@@ -41,6 +41,8 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
+import io.rong.imlib.RongIMClient;
 
 public class LoginActivity extends Activity implements View.OnClickListener, TextWatcher {
 
@@ -65,7 +67,6 @@ public class LoginActivity extends Activity implements View.OnClickListener, Tex
     private boolean passwordHide = false;
     private int width;
     private int height;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,6 +97,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Tex
         iv_pw_hide.setOnClickListener(this);
         sign_up2.setOnClickListener(this);
         let_loginname.addTextChangedListener(this);
+        //当用户名输入框中的文字不为空时显示清除按钮
         let_loginname.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -263,23 +265,42 @@ public class LoginActivity extends Activity implements View.OnClickListener, Tex
                     String result = jsonObject.getString("Result");
                     if (result.equals("success")) {
                         //做自己的登录成功操作，如页面跳转
-                        //跳转到主页面
-
-                        mContext.startActivity(new Intent(mContext,HomeActivity.class));
                         SharePreferenceUtil.putBoolean(mContext, ConstantValue.ISLOGININ,true);
-                        //接受数据
+                        //接收数据
                         String nickname = jsonObject.getString("Nickname");
                         String headImageNumber = jsonObject.getString("HeadImageNumber");
+                        String token = jsonObject.getString("Token");
+                        Log.i(TAG, "onResponse: token"+token);
                         //将数据存储数据库中
-                        UserInfo userInfo = new UserInfo(mContext,Integer.parseInt(QQNumber), nickname, Integer.parseInt(headImageNumber));
+                        UserInfo userInfo = new UserInfo(mContext,Integer.parseInt(QQNumber), nickname, Integer.parseInt(headImageNumber),token);
 
-                        UserDAOUtile userDAOUtile = new UserDAOUtile(mContext);
-                        boolean insertResult = userDAOUtile.insertUser(userInfo);
+                        UserDAOUtil userDAOUtil = new UserDAOUtil(mContext);
+                        boolean insertResult = userDAOUtil.insertUser(userInfo);
                         //如果成功插入了
                         if (insertResult) {
-                            //关闭当前activity
-                            Activity activity = (Activity) mContext;
-                            activity.finish();
+                            //连接融云服务器
+                            RongIMClient.connect(token, new RongIMClient.ConnectCallback() {
+                                @Override
+                                public void onTokenIncorrect() {
+                                    Toast.makeText(mContext,"token无效",Toast.LENGTH_SHORT).show();
+                                }
+
+                                @Override
+                                public void onSuccess(String userId) {
+                                    Toast.makeText(mContext,userId+"登陆成功",Toast.LENGTH_SHORT).show();
+                                    //跳转到主页面
+                                    mContext.startActivity(new Intent(mContext,HomeActivity.class));
+                                    //关闭当前activity
+                                    Activity activity = (Activity) mContext;
+                                    activity.finish();
+                                }
+
+                                @Override
+                                public void onError(RongIMClient.ErrorCode errorCode) {
+                                    Toast.makeText(mContext,"登陆失败",Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
                         } else {
                             Log.e(TAG, "数据插入失败 ");
                         }

@@ -11,4 +11,5 @@
         <item name="android:windowEnterAnimation">@anim/pop_in_anim</item>
         <item name="android:windowExitAnimation">@anim/pop_out_anim</item>
     </style>
+
 </resources>

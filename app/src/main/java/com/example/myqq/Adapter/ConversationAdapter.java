@@ -34,6 +34,7 @@ public class ConversationAdapter extends BaseAdapter implements View.OnTouchList
     public ConversationAdapter(Context context) {
         this.mContext = context;
         statusBarHeight = ConstantValue.statusBarHeight;
+
     }
 
     @Override

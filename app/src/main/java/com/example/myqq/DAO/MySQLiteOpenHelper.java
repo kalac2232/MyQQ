@@ -18,7 +18,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         //创建user表
-        sqLiteDatabase.execSQL("create table user (QQNumber integer,Nickname varchar(20),HeadImageNumber integer)");
+        sqLiteDatabase.execSQL("create table user (QQNumber integer,Nickname varchar(20),HeadImageNumber integer,Token varchar(20))");
     }
 
     @Override

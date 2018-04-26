@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -16,6 +17,7 @@ import android.widget.RelativeLayout;
 
 import com.example.myqq.R;
 import com.example.myqq.Utilts.ConstantValue;
+import com.example.myqq.Utilts.ConversationListViewManager;
 import com.example.myqq.Utilts.SharePreferenceUtil;
 
 /**
@@ -112,6 +114,21 @@ public class ConversationListView extends ListView {
 
             }
         });
+        setOnScrollListener(new OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                //如果发生了上下滑动
+                if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                    //则关闭打开的滑块
+                    ConversationListViewManager.getInstance().closeCurrentLayout();
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+            }
+        });
     }
 
     @Override
@@ -128,15 +145,27 @@ public class ConversationListView extends ListView {
                 Log.i(TAG, "onInterceptTouchEvent: ACTION_MOVE");
                 float moveY = event.getY();
                 float moveX = event.getX();
-                //如果不拦截 则会将事件传入下一个控件导致卡顿
-                if (Math.abs(moveX - mStartX) < Math.abs(moveY - mStartY) && (moveY - mStartY)>0) {
-                    return true;
-                }
-
+                //无作用
+//                //如果不拦截 则会将事件传入下一个控件导致卡顿
+//                if (Math.abs(moveX - mStartX) < Math.abs(moveY - mStartY) && (moveY - mStartY)>0) {
+//                    Log.i(TAG, "onInterceptTouchEvent: true");
+//                    return true;
+//                }
+                break;
+            case MotionEvent.ACTION_UP:
+                Log.i(TAG, "onInterceptTouchEvent: ACTION_UP");
+//                float endY = event.getY();
+//                float endX = event.getX();
+//                if (endX == mStartX && endY == mStartY) {
+//                    Log.i(TAG, "onInterceptTouchEvent: true");
+//                    return true;
+//                }
                 break;
 
         }
-        return super.onInterceptTouchEvent(event);
+        return true;
+        //todo 为了做聊天界面，暂时忽略listview的点击事件的bug
+        //return super.onInterceptTouchEvent(event);
     }
 
     @Override
@@ -144,18 +173,19 @@ public class ConversationListView extends ListView {
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                Log.i(TAG, "onTouchEvent: ACTION_DOWN");
+
                 //这里的语句不执行 为什么？母鸡呀！
                 mStartY = event.getY();
-                Log.i(TAG, "onTouchEvent: 0");
                 break;
             case MotionEvent.ACTION_MOVE:
+                Log.i(TAG, "onTouchEvent: ACTION_MOVE");
                 float moveY = event.getY();
                 float yOffset = moveY - mStartY;
                 listviewSecondItem = getChildAt(1);
                 // 当前第一个可见条目的索引值为0,并且第二个条目（就是第一个聊天框）距上端的距离正好为headerview的宽度
                 if(getFirstVisiblePosition()==0 && listviewSecondItem.getTop() == mHeaderView.getMeasuredHeight()){
                     if ((-goo_MeasuredHeight + yOffset) > 0) {
-                        Log.i(TAG, "onTouchEvent: 1");
                         mHeaderView.setPadding(0, 0, 0, 0);
                         //更改gooview的高度为Y的偏移量
                         ViewGroup.LayoutParams params;
@@ -169,10 +199,8 @@ public class ConversationListView extends ListView {
                         mGooView.updataStickyCenter(mScreenWidth /2, (mGooView.getStickyCenter().y + event.getY() - mPaddingOffset));
                         mPaddingOffset = event.getY();
                     } else {
-                        Log.i(TAG, "onTouchEvent: 2");
                         mPaddingOffset = event.getY();
                         if (yOffset >= 0) {
-                            Log.i(TAG, "onTouchEvent: rl_listview_head.getY();" + rl_listview_head.getY());
                             mHeaderView.setPadding(0, (int) (-goo_MeasuredHeight + (int)yOffset), 0, 0);
                         } else {
                             //初始化俩点的初始值
@@ -193,6 +221,7 @@ public class ConversationListView extends ListView {
                 return  true;
                 //break;
             case MotionEvent.ACTION_UP:
+                Log.i(TAG, "onTouchEvent: ACTION_UP");
                 //将高度恢复
                 ViewGroup.LayoutParams params;
                 params = mGooView.getLayoutParams();

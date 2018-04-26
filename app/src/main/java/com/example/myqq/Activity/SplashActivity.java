@@ -1,27 +1,24 @@
 package com.example.myqq.Activity;
 
 import android.app.Activity;
-import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.transition.Transition;
-import android.transition.TransitionInflater;
 import android.util.Log;
-import android.view.Window;
+import android.widget.Toast;
 
 import com.example.myqq.Bean.UserInfo;
-import com.example.myqq.DAO.UserDAO.UserDAOUtile;
+import com.example.myqq.DAO.UserDAO.UserDAOUtil;
 import com.example.myqq.R;
 import com.example.myqq.Utilts.ConstantValue;
-import com.example.myqq.Utilts.SharePreferenceUtil;
+
+import io.rong.imlib.RongIMClient;
 
 public class SplashActivity extends Activity {
 
     private Context mContext;
-
+    private static final String TAG = "SplashActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,10 +46,27 @@ public class SplashActivity extends Activity {
             public void run() {
 
                 //从数据库中查询是否存在userinfo对象
-                UserDAOUtile userDAOUtile = new UserDAOUtile(mContext);
-                UserInfo userInfo = userDAOUtile.querytUser();
+                UserDAOUtil userDAOUtil = new UserDAOUtil(mContext);
+                final UserInfo userInfo = userDAOUtil.querytUser();
                 //boolean isloginin = SharePreferenceUtil.getBoolean(mContext, ConstantValue.ISLOGININ, false);
                 if (userInfo != null) {
+                    RongIMClient.connect(userInfo.getToken(), new RongIMClient.ConnectCallback() {
+                        @Override
+                        public void onTokenIncorrect() {
+                            Toast.makeText(mContext,"token无效",Toast.LENGTH_SHORT).show();
+                            Log.i(TAG, "onTokenIncorrect: "+userInfo.getToken());
+                        }
+
+                        @Override
+                        public void onSuccess(String userId) {
+                            Toast.makeText(mContext,userId+"登陆成功",Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onError(RongIMClient.ErrorCode errorCode) {
+                            Toast.makeText(mContext,"登陆失败",Toast.LENGTH_SHORT).show();
+                        }
+                    });
                     startActivity(new Intent(mContext,HomeActivity.class));
                 } else {
                     //如果不存在则跳转到登陆界面

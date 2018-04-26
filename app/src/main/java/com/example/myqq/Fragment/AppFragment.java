@@ -17,7 +17,7 @@ public class AppFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.app_fragment, null);
+        View view = inflater.inflate(R.layout.fragment_app, null);
         return view;
     }
 }
