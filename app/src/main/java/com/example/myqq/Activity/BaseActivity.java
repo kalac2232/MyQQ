@@ -9,7 +9,7 @@ import android.view.View;
 
 public class BaseActivity extends Activity {
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //实现状态栏透明
         if (Build.VERSION.SDK_INT >= 21) {

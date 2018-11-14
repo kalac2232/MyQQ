@@ -1,22 +1,30 @@
 package com.example.myqq.Utilts;
 
-import com.example.myqq.View.ConversationFrameLayout;
+import android.util.Log;
+
+import com.example.myqq.View.ChatListMenu;
 
 /**
  * 单例模式，用于管理ConversationListView
  * Created by 97210 on 3/7/2018.
  */
 
-public class ConversationListViewManager {
-    private ConversationListViewManager() {
+public class ChatListMenuManager {
+    private static final String TAG = "ConversationListViewMan";
+    private ChatListMenuManager() {
 
     }
-    private static ConversationListViewManager mInstance = new ConversationListViewManager();
+    private static ChatListMenuManager mInstance = new ChatListMenuManager();
     /**
      * 用来记录当前打开的滑块，为空为无记录，不为空则当前的滑块为打开状态
      */
-    private ConversationFrameLayout currentLayout;
-    public static ConversationListViewManager getInstance() {
+    private static ChatListMenu currentLayout;
+
+    public static Boolean IsOpen() {
+        return currentLayout != null;
+    }
+
+    public static ChatListMenuManager getInstance() {
         return mInstance;
     }
 
@@ -24,7 +32,7 @@ public class ConversationListViewManager {
      * 记录当前打开的滑块
      * @param currentLayout
      */
-    public void setCurrentLayout(ConversationFrameLayout currentLayout){
+    public void setCurrentLayout(ChatListMenu currentLayout){
         this.currentLayout = currentLayout;
     }
 
@@ -32,6 +40,7 @@ public class ConversationListViewManager {
      * 关闭已打开的滑块
      */
     public void closeCurrentLayout(){
+
         if (currentLayout != null ){
             currentLayout.Close();
         }
@@ -46,7 +55,7 @@ public class ConversationListViewManager {
      * 判断当前是否可以进行滑动
      * @return true 可以
      */
-    public boolean isCanSwipe(ConversationFrameLayout Layout){
+    public boolean isCanSwipe(ChatListMenu Layout){
         //如果无记录，
         if (currentLayout == null) {
             return true;

@@ -36,7 +36,7 @@ public class ChatActivity extends BaseActivity implements TextWatcher, View.OnCl
     private ChatAdapter mChatAdapter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         mContext = this;
@@ -48,14 +48,14 @@ public class ChatActivity extends BaseActivity implements TextWatcher, View.OnCl
     }
 
     private void init() {
-        lv_chat = findViewById(R.id.lv_chat);
+        lv_chat = (ListView) findViewById(R.id.lv_chat);
         mChatAdapter = new ChatAdapter(mContext);
         lv_chat.setAdapter(mChatAdapter);
-        et_message = findViewById(R.id.et_message);
-        iv_seating = findViewById(R.id.iv_Seating);
-        btn_can_not_send = findViewById(R.id.btn_can_not_send);
-        bt_chat_goback = findViewById(R.id.bt_chat_goback);
-        btn_sendmessage = findViewById(R.id.btn_sendmessage);
+        et_message = (EditText) findViewById(R.id.et_message);
+        iv_seating = (ImageView) findViewById(R.id.iv_Seating);
+        btn_can_not_send = (Button) findViewById(R.id.btn_can_not_send);
+        bt_chat_goback = (Button) findViewById(R.id.bt_chat_goback);
+        btn_sendmessage = (Button) findViewById(R.id.btn_sendmessage);
         rootLayout = this.getWindow().getDecorView();
         KeyboardOnGlobalChangeListener keyboardOnGlobalChangeListener = new KeyboardOnGlobalChangeListener();
         //监听输入法的显示的状态

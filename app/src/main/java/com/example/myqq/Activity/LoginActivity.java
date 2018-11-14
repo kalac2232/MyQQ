@@ -42,7 +42,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import io.rong.imlib.RongIMClient;
 
 public class LoginActivity extends Activity implements View.OnClickListener, TextWatcher {
 
@@ -72,7 +71,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Tex
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         mContext = this;
-        initUI();
+        initView();
         initListener();
         Intent intent = getIntent();
         if (intent != null) {
@@ -81,7 +80,6 @@ public class LoginActivity extends Activity implements View.OnClickListener, Tex
                 ll_index.setVisibility(View.GONE);
                 ll_login.setVisibility(View.VISIBLE);
                 ll_tip.setVisibility(View.VISIBLE);
-
             }
         }
     }
@@ -129,7 +127,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Tex
         });
     }
 
-    private void initUI() {
+    private void initView() {
         //sign_in 登陆
         sign_in = (Button) findViewById(R.id.sign_in);//初始页的登陆按钮
         sign_up = (Button) findViewById(R.id.sign_up);//初始页的注册按钮
@@ -241,7 +239,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Tex
     /**
      * 登陆操作
      * @param QQNumber 要验证的QQ号
-     * @param password 和密码
+     * @param password 密码
      */
     public void LoginRequest(final String QQNumber, final String password) {
         //请求地址
@@ -265,12 +263,11 @@ public class LoginActivity extends Activity implements View.OnClickListener, Tex
                     String result = jsonObject.getString("Result");
                     if (result.equals("success")) {
                         //做自己的登录成功操作，如页面跳转
-                        SharePreferenceUtil.putBoolean(mContext, ConstantValue.ISLOGININ,true);
+                        SharePreferenceUtil.putString(mContext, ConstantValue.USERID,QQNumber);
                         //接收数据
                         String nickname = jsonObject.getString("Nickname");
                         String headImageNumber = jsonObject.getString("HeadImageNumber");
                         String token = jsonObject.getString("Token");
-                        Log.i(TAG, "onResponse: token"+token);
                         //将数据存储数据库中
                         UserInfo userInfo = new UserInfo(mContext,Integer.parseInt(QQNumber), nickname, Integer.parseInt(headImageNumber),token);
 
@@ -278,28 +275,11 @@ public class LoginActivity extends Activity implements View.OnClickListener, Tex
                         boolean insertResult = userDAOUtil.insertUser(userInfo);
                         //如果成功插入了
                         if (insertResult) {
-                            //连接融云服务器
-                            RongIMClient.connect(token, new RongIMClient.ConnectCallback() {
-                                @Override
-                                public void onTokenIncorrect() {
-                                    Toast.makeText(mContext,"token无效",Toast.LENGTH_SHORT).show();
-                                }
-
-                                @Override
-                                public void onSuccess(String userId) {
-                                    Toast.makeText(mContext,userId+"登陆成功",Toast.LENGTH_SHORT).show();
-                                    //跳转到主页面
-                                    mContext.startActivity(new Intent(mContext,HomeActivity.class));
-                                    //关闭当前activity
-                                    Activity activity = (Activity) mContext;
-                                    activity.finish();
-                                }
-
-                                @Override
-                                public void onError(RongIMClient.ErrorCode errorCode) {
-                                    Toast.makeText(mContext,"登陆失败",Toast.LENGTH_SHORT).show();
-                                }
-                            });
+                            //跳转到主页面
+                            mContext.startActivity(new Intent(mContext,HomeActivity.class));
+                            //关闭当前activity
+                            Activity activity = (Activity) mContext;
+                            activity.finish();
 
                         } else {
                             Log.e(TAG, "数据插入失败 ");

@@ -16,8 +16,8 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 
 import com.example.myqq.R;
+import com.example.myqq.Utilts.ChatListMenuManager;
 import com.example.myqq.Utilts.ConstantValue;
-import com.example.myqq.Utilts.ConversationListViewManager;
 import com.example.myqq.Utilts.SharePreferenceUtil;
 
 /**
@@ -38,6 +38,10 @@ public class ConversationListView extends ListView {
     private GooView mGooView;
     private Boolean isRefreshAnimFinish = false;
     private float mPaddingOffset;
+    /**
+     * 最小滑动单位
+     */
+    private int mTouchSlop = 10;
 
     private int statusBarHeight;
     Handler handler = new Handler() {
@@ -120,7 +124,7 @@ public class ConversationListView extends ListView {
                 //如果发生了上下滑动
                 if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
                     //则关闭打开的滑块
-                    ConversationListViewManager.getInstance().closeCurrentLayout();
+                    ChatListMenuManager.getInstance().closeCurrentLayout();
                 }
             }
 
@@ -132,11 +136,28 @@ public class ConversationListView extends ListView {
     }
 
     @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        switch (ev.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                Log.i(TAG, "dispatchTouchEvent: ACTION_DOWN");
+                break;
+            case MotionEvent.ACTION_MOVE:
+                Log.i(TAG, "dispatchTouchEvent: ACTION_MOVE");
+                break;
+            case MotionEvent.ACTION_UP:
+                Log.i(TAG, "dispatchTouchEvent: ACTION_UP");
+                break;
+
+
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+
+    @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                //onTouchEvent中的mStartY时从这里获取的 因为onTouchEvent不执行ACTION_DOWN事件，佷无奈
                 Log.i(TAG, "onInterceptTouchEvent: ACTION_DOWN");
                 mStartY = event.getY();
                 mStartX = event.getX();
@@ -145,37 +166,35 @@ public class ConversationListView extends ListView {
                 Log.i(TAG, "onInterceptTouchEvent: ACTION_MOVE");
                 float moveY = event.getY();
                 float moveX = event.getX();
-                //无作用
-//                //如果不拦截 则会将事件传入下一个控件导致卡顿
-//                if (Math.abs(moveX - mStartX) < Math.abs(moveY - mStartY) && (moveY - mStartY)>0) {
-//                    Log.i(TAG, "onInterceptTouchEvent: true");
-//                    return true;
-//                }
+                if (Math.abs(moveX - mStartX) < Math.abs(moveY - mStartY) ) {
+                    Log.i(TAG, "onInterceptTouchEvent: true");
+                    return true;
+                }
+
                 break;
             case MotionEvent.ACTION_UP:
                 Log.i(TAG, "onInterceptTouchEvent: ACTION_UP");
-//                float endY = event.getY();
-//                float endX = event.getX();
-//                if (endX == mStartX && endY == mStartY) {
-//                    Log.i(TAG, "onInterceptTouchEvent: true");
-//                    return true;
-//                }
+
                 break;
 
         }
-        return true;
-        //todo 为了做聊天界面，暂时忽略listview的点击事件的bug
-        //return super.onInterceptTouchEvent(event);
+        //return true;
+
+        return super.onInterceptTouchEvent(event);
+    }
+
+    @Override
+    public boolean performClick() {
+        Log.i(TAG, "performClick: ");
+        return super.performClick();
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 Log.i(TAG, "onTouchEvent: ACTION_DOWN");
-
-                //这里的语句不执行 为什么？母鸡呀！
+                mStartX = event.getX();
                 mStartY = event.getY();
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -221,6 +240,7 @@ public class ConversationListView extends ListView {
                 return  true;
                 //break;
             case MotionEvent.ACTION_UP:
+                performClick();
                 Log.i(TAG, "onTouchEvent: ACTION_UP");
                 //将高度恢复
                 ViewGroup.LayoutParams params;
@@ -255,7 +275,7 @@ public class ConversationListView extends ListView {
 
 
         }
-        return super.onTouchEvent(event);
+        return false;
     }
     public void clearStatus() {
         mGooView.initPointsCenter(mScreenWidth /2,goo_MeasuredHeight/2);

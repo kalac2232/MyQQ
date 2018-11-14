@@ -58,11 +58,17 @@ public class ConversationAdapter extends BaseAdapter implements View.OnTouchList
         ViewHolder viewHolder;
         if (convertView == null) {
             convertView = View.inflate(mContext, R.layout.adapter_list, null);
-            viewHolder = new ViewHolder(convertView);
+            viewHolder = new ViewHolder(convertView,mContext);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
+        viewHolder.MainContent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG, "onClick: MainContent");
+            }
+        });
         viewHolder.bt_Stick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -155,7 +161,9 @@ public class ConversationAdapter extends BaseAdapter implements View.OnTouchList
         ImageView headIcon;
         TextView tv_name,tv_lastMessage,tv_lastTime,tv_newsnumber;
         Button bt_Stick,bt_MarkingUnread,bt_delete;
-        ViewHolder(View convertView) {
+        View MainContent;
+        ViewHolder(View convertView,Context context) {
+            MainContent = convertView.findViewById(R.id.ll_content);
             bt_Stick = (Button) convertView.findViewById(R.id.tv_Stick);
             bt_MarkingUnread = (Button) convertView.findViewById(R.id.tv_MarkingUnread);
             bt_delete = (Button) convertView.findViewById(R.id.tv_delete);

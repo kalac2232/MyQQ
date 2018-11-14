@@ -1,25 +1,22 @@
 package com.example.myqq.Activity;
 
-import android.app.Activity;
+
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.BaseAdapter;
-import android.widget.Toast;
+
 
 import com.example.myqq.Fragment.AppFragment;
 import com.example.myqq.Fragment.ContactsFragment;
 import com.example.myqq.Fragment.ConversationFragment;
 import com.example.myqq.R;
+import com.example.myqq.View.ContentLinearLayout;
 import com.example.myqq.View.NaviBarRadioButton;
+import com.example.myqq.View.SlideMenuView;
 
-import io.rong.imlib.RongIMClient;
 
 /**
  *
@@ -34,7 +31,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
     private Context mContext;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         mContext = this;
@@ -42,25 +39,25 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void init() {
-
-
-        conversationFragment = new ConversationFragment();
-        contactsFragment = new ContactsFragment();
-        appFragment = new AppFragment();
-        //默认显示消息Fragment
-        showFragment(conversationFragment);
         //找到按钮控件
         NaviBarRadioButton rb_conversation = (NaviBarRadioButton) findViewById(R.id.rb_conversation);
         NaviBarRadioButton rb_contact = (NaviBarRadioButton) findViewById(R.id.rb_contact);
         NaviBarRadioButton rb_apps = (NaviBarRadioButton) findViewById(R.id.rb_apps);
+        SlideMenuView slideMenuView = findViewById(R.id.slidingview);
+        ContentLinearLayout contentLinear = findViewById(R.id.ll_mainliner);
+        contentLinear.setSlideMenu(slideMenuView);
+
+        conversationFragment = new ConversationFragment(slideMenuView);
+        contactsFragment = new ContactsFragment();
+        appFragment = new AppFragment();
+        //默认显示消息Fragment
+        showFragment(conversationFragment);
 
         rb_conversation.setOnClickListener(this);
         rb_contact.setOnClickListener(this);
         rb_apps.setOnClickListener(this);
 
     }
-
-
 
     /**
      * 显示相应的fragment

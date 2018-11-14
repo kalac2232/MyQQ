@@ -9,13 +9,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import com.example.myqq.Utilts.ConversationListViewManager;
+import com.example.myqq.Utilts.ChatListMenuManager;
 
 /**
  * Created by 97210 on 2/24/2018.
  */
 
-public class ConversationFrameLayout extends FrameLayout {
+public class ChatListMenu extends FrameLayout {
     private View listContent;
     private View listDelete;
     ViewDragHelper viewDragHelper;
@@ -23,24 +23,27 @@ public class ConversationFrameLayout extends FrameLayout {
     private float startX;
     private float start1X;
     private float start1Y;
-
-    public ConversationFrameLayout(Context context) {
+    /**
+     * 最小滑动单位
+     */
+    private int mTouchSlop = 10;
+    public ChatListMenu(Context context) {
         super(context);
         init();
     }
 
-    public ConversationFrameLayout(Context context, AttributeSet attrs) {
+    public ChatListMenu(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public ConversationFrameLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ChatListMenu(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
 
     }
 
-    private static final String TAG = "ConversationFrameLayout";
+    private static final String TAG = "ChatListMenu";
 
     @Override
     protected void onFinishInflate() {
@@ -63,47 +66,71 @@ public class ConversationFrameLayout extends FrameLayout {
         viewDragHelper = ViewDragHelper.create(this,callback);
     }
     private SwipeState currentState = SwipeState.Close;//记录当前状态，默认为关闭
+
     @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        switch (ev.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                Log.i(TAG, "dispatchTouchEvent: ACTION_DOWN");
+                break;
+            case MotionEvent.ACTION_MOVE:
+                Log.i(TAG, "dispatchTouchEvent: ACTION_MOVE");
+                break;
+            case MotionEvent.ACTION_UP:
+                Log.i(TAG, "dispatchTouchEvent: ACTION_UP");
+                break;
+
+
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+
     public boolean onInterceptTouchEvent(MotionEvent event) {
         boolean result = viewDragHelper.shouldInterceptTouchEvent(event);
         //判断当前是否可以进行滑动,如果可以滑动，直接交给ontouch处理
-        if (!ConversationListViewManager.getInstance().isCanSwipe(this) ) {
+        if (!ChatListMenuManager.getInstance().isCanSwipe(this) ) {
             //如果不可以滑动先关闭已经打开的滑块
-            ConversationListViewManager.getInstance().closeCurrentLayout();
+            ChatListMenuManager.getInstance().closeCurrentLayout();
             result = true;
+        }
+        switch(event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                startX = event.getX();
+                startY = event.getY();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                float endX = event.getX();
+                float endY = event.getY();
+                float xOffset = endX - startX;
+                float yOffset = endY - startY;
+                if (Math.abs(xOffset) > Math.abs(yOffset) && xOffset < -mTouchSlop ) {
+                    Log.i(TAG, "onInterceptTouchEvent: 左划");
+                    getParent().requestDisallowInterceptTouchEvent(true);
+                    result = true;
+                }
+                if (Math.abs(xOffset) > Math.abs(yOffset) && xOffset > 0  && ChatListMenuManager.IsOpen()) {
+                    Log.i(TAG, "onInterceptTouchEvent: 开启小菜单下右划");
+                    getParent().requestDisallowInterceptTouchEvent(true);
+                    result = true;
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                break;
+            default:
+                break;
         }
         return result;
     }
 
-//    @Override
-//    public boolean dispatchTouchEvent(MotionEvent event) {
-//        switch (event.getAction()) {
-//
-//            case MotionEvent.ACTION_DOWN:
-//                startX = event.getX();
-//                startY = event.getY();
-//
-//                break;
-//            case MotionEvent.ACTION_MOVE:
-//                float endX = event.getX();
-//                float endY = event.getY();
-//
-//                if (Math.abs(endX-startX) > Math.abs(endY-startY) && (endX - startX) > 0) {
-//                    Log.i(TAG, "dispatchTouchEvent: ACTION_MOVE执行");
-//                    return false;
-//                }
-//                break;
-//        }
-//        return super.dispatchTouchEvent(event);
-//    }
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
         //判断当前是否可以进行滑动
-        if ( !ConversationListViewManager.getInstance().isCanSwipe(this) ) {
-            return true;
-        }
+//        if ( !ChatListMenuManager.getInstance().isCanSwipe(this) ) {
+//            return true;
+//        }
         switch (event.getAction()) {
 
             case MotionEvent.ACTION_DOWN:
@@ -119,9 +146,21 @@ public class ConversationFrameLayout extends FrameLayout {
                 float xOffset = endX - startX;
                 float yOffset = endY - startY;
 
-                if (Math.abs(xOffset) > Math.abs(yOffset)) {
-                    //请求父控件不要拦截事件
-                    requestDisallowInterceptTouchEvent(true);
+//                if (Math.abs(xOffset) > Math.abs(yOffset) ) {
+//                    if (ConversationListViewManager.getInstance() == null && xOffset < 0) {
+//                        //请求父控件不要拦截事件
+//                        getParent().requestDisallowInterceptTouchEvent(true);
+//                    } else if (ConversationListViewManager.getInstance() != null && xOffset > 0) {
+//                        getParent().requestDisallowInterceptTouchEvent(true);
+//                    }
+//                }
+                if (Math.abs(xOffset) > Math.abs(yOffset) && xOffset < 0 ) {
+                    Log.i(TAG, "onTouchEvent: 左划");
+                    getParent().requestDisallowInterceptTouchEvent(true);
+                }
+                if (Math.abs(xOffset) > Math.abs(yOffset) && xOffset > 0  && ChatListMenuManager.IsOpen()) {
+                    Log.i(TAG, "onTouchEvent: 开启小菜单下右划");
+                    getParent().requestDisallowInterceptTouchEvent(true);
                 }
                 startX = endX;
                 startY = endY;
@@ -189,11 +228,11 @@ public class ConversationFrameLayout extends FrameLayout {
             if (listContent.getLeft() == 0 && currentState != SwipeState.Close) {
                 currentState = SwipeState.Close;
                 //清空Manager中的记录值
-                ConversationListViewManager.getInstance().clearCurrentLayout();
+                ChatListMenuManager.getInstance().clearCurrentLayout();
             }else if (listContent.getLeft() == -listDelete.getMeasuredWidth() && currentState != SwipeState.Open) {
                 currentState = SwipeState.Open;
                 //将当前滑块传给Manager管理起来
-                ConversationListViewManager.getInstance().setCurrentLayout(ConversationFrameLayout.this);
+                ChatListMenuManager.getInstance().setCurrentLayout(ChatListMenu.this);
             }
         }
         /**
@@ -215,7 +254,7 @@ public class ConversationFrameLayout extends FrameLayout {
     };
     public void computeScroll() {
         if (viewDragHelper.continueSettling(true)) {
-            ViewCompat.postInvalidateOnAnimation(ConversationFrameLayout.this);
+            ViewCompat.postInvalidateOnAnimation(ChatListMenu.this);
         }
     }
     public void Open() {
