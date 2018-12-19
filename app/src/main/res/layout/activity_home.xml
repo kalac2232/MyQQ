@@ -3,12 +3,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent">
 
-    <com.example.myqq.View.SlideMenuView
+    <com.example.myqq.view.SlideMenuView
         android:id="@+id/slidingview"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <include layout="@layout/sliding_menu"/>
         <include layout="@layout/activity_content"/>
 
-    </com.example.myqq.View.SlideMenuView>
+    </com.example.myqq.view.SlideMenuView>
 </RelativeLayout>

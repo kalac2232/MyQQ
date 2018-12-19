@@ -1,75 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.example.myqq.View.ContentLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:id="@+id/ll_mainliner"
-                android:background="#fff"
->
+<com.example.myqq.view.ContentLinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_mainliner"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:orientation="vertical"
+    >
+
     <FrameLayout
-        android:layout_weight="1"
         android:id="@+id/fl_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_weight="1">
 
     </FrameLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/topline">
+        android:background="@drawable/topline"
+        android:orientation="horizontal">
+
         <RadioGroup
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             >
 
-            <com.example.myqq.View.NaviBarRadioButton
+            <com.example.myqq.view.NaviBarRadioButton
                 android:id="@+id/rb_conversation"
-                android:layout_gravity="center"
-                android:paddingTop="5dp"
-                android:layout_weight="1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:button="@null"
-                android:text="消息"
-                android:textSize="14sp"
-                android:gravity="center"
+                android:layout_gravity="center"
+                android:layout_weight="1"
                 android:background="@android:color/transparent"
+                android:button="@null"
                 android:checked="true"
+                android:gravity="center"
+                android:paddingTop="5dp"
+                android:text="消息"
                 android:textColor="#ef1ea3d8"
+                android:textSize="14sp"
                 />
-            <com.example.myqq.View.NaviBarRadioButton
+
+            <com.example.myqq.view.NaviBarRadioButton
                 android:id="@+id/rb_contact"
-                android:layout_gravity="center"
-                android:paddingTop="5dp"
-                android:layout_weight="1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
                 android:button="@null"
+                android:gravity="center"
+                android:paddingTop="5dp"
                 android:text="联系人"
-                android:textSize="14sp"
-                android:gravity="center"
-                android:background="@android:color/transparent"
                 android:textColor="#7f8393"
+                android:textSize="14sp"
                 />
-            <com.example.myqq.View.NaviBarRadioButton
+
+            <com.example.myqq.view.NaviBarRadioButton
                 android:id="@+id/rb_apps"
-                android:layout_gravity="center"
-                android:paddingTop="5dp"
-                android:layout_weight="1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:button="@null"
-                android:text="动态"
-                android:textSize="14sp"
-                android:gravity="center"
+                android:layout_gravity="center"
+                android:layout_weight="1"
                 android:background="@android:color/transparent"
+                android:button="@null"
+                android:gravity="center"
+                android:paddingTop="5dp"
+                android:text="动态"
                 android:textColor="#7f8393"
+                android:textSize="14sp"
                 />
 
         </RadioGroup>
 
     </LinearLayout>
-</com.example.myqq.View.ContentLinearLayout>
+</com.example.myqq.view.ContentLinearLayout>

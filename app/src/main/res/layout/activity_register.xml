@@ -41,7 +41,7 @@
 
         </LinearLayout>
 
-        <com.example.myqq.View.LoginEditText
+        <EditText
 
             android:id="@+id/register_nickname"
             android:layout_marginTop="40dp"
@@ -54,7 +54,7 @@
             android:maxLength="20"
             android:textSize="18sp"
             />
-        <com.example.myqq.View.LoginEditText
+        <EditText
 
             android:id="@+id/register_pw"
             android:layout_marginTop="40dp"
@@ -67,7 +67,7 @@
             android:maxLength="20"
             android:textSize="18sp"
             />
-        <com.example.myqq.View.LoginEditText
+        <EditText
             android:id="@+id/register_telephone"
             android:layout_marginTop="40dp"
             android:layout_width="match_parent"

@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:background="#fff">
 
-    <com.example.myqq.View.ChatListMenu
+    <com.example.myqq.view.ChatListMenu
 
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
@@ -13,7 +13,7 @@
         <include layout="@layout/list_content" />
         <!-- 删除区域的布局 -->
         <include layout="@layout/list_delete" />
-    </com.example.myqq.View.ChatListMenu
+    </com.example.myqq.view.ChatListMenu
         >
 
 </LinearLayout>

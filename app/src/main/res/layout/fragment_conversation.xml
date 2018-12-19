@@ -42,7 +42,7 @@
             android:background="@drawable/head_btn_add_selector"
             />
     </RelativeLayout>
-    <com.example.myqq.View.ConversationListView
+    <com.example.myqq.view.ConversationListView
         android:id="@+id/lv_conversation"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

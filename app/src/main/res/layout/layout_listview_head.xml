@@ -8,7 +8,7 @@
         android:id="@+id/rl_listview_head"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <com.example.myqq.View.GooView
+        <com.example.myqq.view.GooView
             android:id="@+id/goo_list_head"
             android:layout_width="match_parent"
             android:layout_height="50dp"
